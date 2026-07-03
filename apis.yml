@@ -1,0 +1,51 @@
+name: CrawlGraph
+description: >-
+  A backlink-intelligence SaaS built on Common Crawl's open hyperlink graph (~120M domains / 4.4B links). Provides
+  referring-domain lookups, competitor gap analysis, and outreach-target discovery as a low-cost alternative to
+  Ahrefs/Moz/Semrush.
+url: https://crawlgraph.apievangelist.com/apis.yml
+created: '2026-07-03'
+modified: '2026-07-03'
+specificationVersion: '0.21'
+tags:
+  - SEO
+  - backlink-intelligence
+  - martech
+  - competitive-intelligence
+  - web-data
+  - Common-Crawl
+  - link-building
+  - developer-tools
+  - API
+  - MCP
+apis:
+  - name: CrawlGraph REST API v1
+    description: >-
+      JSON REST API for backlink/referring-domain lookups, indexed Common Crawl release listing, and async competitor
+      gap analysis. Bearer auth (cg_live_ keys); API access requires the $99 lifetime tier.
+    humanURL: https://crawlgraph.com/docs/api
+    baseURL: https://crawlgraph.com/api/v1/
+    tags:
+      - SEO
+      - backlink-intelligence
+      - martech
+      - competitive-intelligence
+      - web-data
+      - Common-Crawl
+      - link-building
+      - developer-tools
+      - API
+      - MCP
+    properties:
+      - type: Documentation
+        url: https://crawlgraph.com/docs/api
+      - type: LLMSTxt
+        url: https://crawlgraph.com/llms.txt
+maintainers:
+  - FN: Petteri (pucilpet)
+    url: https://github.com/pucilpet
+generated:
+  by: apis.io/add
+  model: claude-opus-4-8
+  confidence: 85
+  at: '2026-07-03T11:50:54.356Z'
