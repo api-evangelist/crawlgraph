@@ -1,3 +1,15 @@
+accessModel:
+  pricing: unknown
+  onboarding: unknown
+  trial: false
+  try_now: false
+  public: false
+  label: Unknown
+  confidence: low
+  source: []
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/crawlgraph.png
 name: CrawlGraph
 description: >-
   A backlink-intelligence SaaS built on Common Crawl's open hyperlink graph (~120M domains / 4.4B links). Provides
