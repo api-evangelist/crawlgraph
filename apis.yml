@@ -1,23 +1,31 @@
 accessModel:
-  pricing: unknown
-  onboarding: unknown
-  trial: false
-  try_now: false
-  public: false
-  label: Unknown
-  confidence: low
-  source: []
-  generated: '2026-07-22'
-  method: derived
+  pricing: freemium
+  onboarding: self-serve
+  trial: true
+  try_now: true
+  public: true
+  label: Free tier · Self-serve signup · $99 lifetime
+  confidence: high
+  source:
+    - plans
+    - authentication
+    - rate-limits
+  generated: '2026-08-13'
+  method: searched
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/crawlgraph.png
 name: CrawlGraph
 description: >-
-  A backlink-intelligence SaaS built on Common Crawl's open hyperlink graph (~120M domains / 4.4B links). Provides
-  referring-domain lookups, competitor gap analysis, and outreach-target discovery as a low-cost alternative to
-  Ahrefs/Moz/Semrush.
+  CrawlGraph is a backlink-intelligence SaaS built on Common Crawl's open hyperlink graph (121.1M domains / 3.90B
+  domain-level links), positioned as a low-cost alternative to Ahrefs, Moz, Semrush and Majestic. It offers
+  referring-domain lookups with authority scoring, competitor gap analysis, warm outreach-target discovery, and
+  cross-release change comparison. The product ships an unusually complete developer surface for a solo-operator
+  SaaS: a public OpenAPI 3.1 contract, a self-serve free API tier (15 backlink calls a month, no card), a hosted
+  remote MCP server whose tools publish both input and output schemas, an open-source local MCP package on npm, a
+  published llms.txt, and open CC-BY study datasets. It is operated by Search Engine Wizards in Finland and priced
+  as a one-time $99 lifetime licence rather than a subscription.
 url: https://crawlgraph.apievangelist.com/apis.yml
 created: '2026-07-03'
-modified: '2026-07-03'
+modified: '2026-08-13'
 specificationVersion: '0.21'
 tags:
   - SEO
@@ -33,8 +41,12 @@ tags:
 apis:
   - name: CrawlGraph REST API v1
     description: >-
-      JSON REST API for backlink/referring-domain lookups, indexed Common Crawl release listing, and async competitor
-      gap analysis. Bearer auth (cg_live_ keys); API access requires the $99 lifetime tier.
+      JSON REST API for backlink/referring-domain lookups with authority scoring, indexed Common Crawl release
+      listing, async competitor gap analysis, and cross-release change comparison. Six operations under
+      /api/v1, described by a live OpenAPI 3.1.0 contract served anonymously at
+      https://crawlgraph.com/api/v1/openapi.json. Bearer auth with cg_live_ keys. A free self-serve tier
+      (15 backlink calls/month, emailed key, no card) is available; gap analysis and the 1,000-call allowance
+      require the $99 lifetime tier.
     humanURL: https://crawlgraph.com/docs/api
     baseURL: https://crawlgraph.com/api/v1/
     tags:
@@ -47,17 +59,126 @@ apis:
       - link-building
       - developer-tools
       - API
-      - MCP
     properties:
       - type: Documentation
         url: https://crawlgraph.com/docs/api
+      - type: APIReference
+        url: https://crawlgraph.com/docs/api
+      - type: OpenAPI
+        url: openapi/crawlgraph-v1-openapi.yml
+      - type: Overlay
+        url: overlays/crawlgraph-v1-overlay.yaml
+      - type: Authentication
+        url: authentication/crawlgraph-authentication.yml
+      - type: Conventions
+        url: conventions/crawlgraph-conventions.yml
+      - type: ErrorCatalog
+        url: errors/crawlgraph-problem-types.yml
+      - type: DataModel
+        url: data-model/crawlgraph-data-model.yml
+      - type: RateLimits
+        url: rate-limits/crawlgraph-rate-limits.yml
       - type: LLMSTxt
         url: https://crawlgraph.com/llms.txt
+  - name: CrawlGraph MCP Server
+    description: >-
+      Hosted remote Model Context Protocol server at https://crawlgraph.com/mcp over Streamable HTTP, plus an
+      open-source local stdio fallback published to npm as crawlgraph-mcp (MIT). Four tools — backlinks,
+      gap_analysis, gap_outreach_targets, releases — each publishing a JSON Schema inputSchema AND outputSchema
+      with behavioural annotations. tools/list answers anonymously; tool invocation uses the same cg_live_ bearer
+      key and the same monthly quotas as the REST API. The gap_outreach_targets tool is MCP-value-added: it
+      orchestrates the async gap job, tiers results by competitor overlap, filters platform/CDN noise, and
+      authority-scores the top targets.
+    humanURL: https://crawlgraph.com/docs/api
+    baseURL: https://crawlgraph.com/mcp
+    tags:
+      - MCP
+      - agents
+      - SEO
+      - backlink-intelligence
+      - developer-tools
+    properties:
+      - type: MCPServer
+        url: mcp/crawlgraph-mcp.yml
+      - type: ToolCrosswalk
+        url: mcp/crawlgraph-tool-crosswalk.yml
+      - type: Documentation
+        url: https://crawlgraph.com/docs/api
+      - type: SourceCode
+        url: https://github.com/pucilpet/crawlgraph-mcp
 maintainers:
-  - FN: Petteri (pucilpet)
+  - FN: Petteri Pucilowski (pucilpet)
+    email: petteri@searchenginewizards.fi
     url: https://github.com/pucilpet
+    organization: Search Engine Wizards
 generated:
   by: apis.io/add
   model: claude-opus-4-8
   confidence: 85
   at: '2026-07-03T11:50:54.356Z'
+common:
+- type: DeveloperPortal
+  url: https://crawlgraph.com/docs/api
+- type: Documentation
+  url: https://crawlgraph.com/docs/api
+- type: APIReference
+  url: https://crawlgraph.com/docs/api
+- type: GettingStarted
+  url: https://crawlgraph.com/docs/api
+- type: Blog
+  url: https://crawlgraph.com/blog
+- type: SourceCode
+  url: https://github.com/pucilpet/crawlgraph-mcp
+- type: Login
+  url: https://crawlgraph.com/login
+- type: TermsOfService
+  url: https://crawlgraph.com/terms
+- type: PrivacyPolicy
+  url: https://crawlgraph.com/privacy
+- type: OpenAPI
+  url: openapi/crawlgraph-v1-openapi.yml
+- type: MCPServer
+  url: mcp/crawlgraph-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/crawlgraph-tool-crosswalk.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/crawlgraph-llms.txt
+- type: WellKnown
+  url: well-known/crawlgraph-well-known.yml
+- type: SecurityTxt
+  url: well-known/crawlgraph-security.txt
+- type: Security
+  url: security/crawlgraph-vulnerability-disclosure.yml
+- type: VulnerabilityDisclosure
+  url: security/crawlgraph-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/crawlgraph-domain-security.yml
+- type: Authentication
+  url: authentication/crawlgraph-authentication.yml
+- type: Conventions
+  url: conventions/crawlgraph-conventions.yml
+- type: ErrorCatalog
+  url: errors/crawlgraph-problem-types.yml
+- type: DataModel
+  url: data-model/crawlgraph-data-model.yml
+- type: RateLimits
+  url: rate-limits/crawlgraph-rate-limits.yml
+- type: Plans
+  url: plans/crawlgraph-plans-pricing.yml
+- type: Lifecycle
+  url: lifecycle/crawlgraph-lifecycle.yml
+- type: Conformance
+  url: conformance/crawlgraph-conformance.yml
+- type: Packages
+  url: packages/crawlgraph-packages.yml
+- type: Overlay
+  url: overlays/crawlgraph-v1-overlay.yaml
+x-enrichment:
+  date: '2026-08-13'
+  status: enriched
+  artifacts_added: 25
+  pass: local-v1
+x-coverage:
+  state: covered
