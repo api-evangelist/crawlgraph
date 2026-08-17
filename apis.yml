@@ -23,7 +23,7 @@ description: >-
   remote MCP server whose tools publish both input and output schemas, an open-source local MCP package on npm, a
   published llms.txt, and open CC-BY study datasets. It is operated by Search Engine Wizards in Finland and priced
   as a one-time $99 lifetime licence rather than a subscription.
-url: https://crawlgraph.apievangelist.com/apis.yml
+url: https://raw.githubusercontent.com/api-evangelist/crawlgraph/refs/heads/main/apis.yml
 created: '2026-07-03'
 modified: '2026-08-13'
 specificationVersion: '0.21'
