@@ -1,0 +1,76 @@
+# CrawlGraph
+
+> Free backlink intelligence powered by Common Crawl's hyperlink graph (121.1M domains, 3.90B links). Paste any domain, see every site linking to it. No signup. $99 lifetime, unlimited queries.
+
+CrawlGraph is a backlink-checker SaaS for SEOs, indie founders, and researchers priced out of Ahrefs and Moz. The hyperlink graph from Common Crawl's quarterly web crawl is reindexed within days of each release; data spans 2017 through the latest 2026 release.
+
+## Core pages
+
+- [Homepage](https://crawlgraph.com): product overview, free preview, pricing.
+- [Gap analysis](https://crawlgraph.com/gap-analysis): compare your backlinks against up to 4 competitors.
+- [API documentation](https://crawlgraph.com/docs/api): public REST API with a FREE tier (15 backlink calls/month, self-serve key by email, no card). The $99 lifetime license raises this to 1,000 backlink lookups + 50 gap analyses per month and unlocks the gap and outreach tools in the API and MCP server.
+- [Blog](https://crawlgraph.com/blog): articles on backlink methodology, Common Crawl, comparisons with Ahrefs and Semrush.
+- [MCP server](https://github.com/pucilpet/crawlgraph-mcp): "crawlgraph-mcp" on npm (npx -y crawlgraph-mcp). Four tools for backlinks, gap analysis, outreach targets, and releases, usable from Claude, Cursor, and Cline.
+
+## Data studies and open datasets
+
+Original backlink-overlap studies on Common Crawl data (which domains link to every major tool in a category), free to cite and download:
+
+- [Who links to every SEO tool](https://crawlgraph.com/blog/who-links-to-every-seo-tool): 37 domains link to all 8 major SEO tools; mostly trade media and roundups.
+- [Who links to every CRM](https://crawlgraph.com/blog/who-links-to-every-crm): only 2 domains link to all 8 major CRMs; integration-driven niche.
+- [SEO-tool link leaderboard](https://crawlgraph.com/seo-tools-link-leaderboard): sortable table with CSV and JSON download.
+- [Open datasets repo](https://github.com/pucilpet/crawlgraph-datasets): CSV and JSON for every study, CC-BY.
+
+## Blog posts
+
+- [35 domains link to every major web host](https://crawlgraph.com/blog/who-links-to-every-web-host) (2026-08-10): we compared 8 web hosts using the top 2,000 referring domains per subject from common crawl. 35 non-platform domains link to the full set.
+- [13 domains link to every major no-code tool](https://crawlgraph.com/blog/who-links-to-every-no-code-tool) (2026-08-07): we compared 8 no-code tools using the top 2,000 referring domains per subject from common crawl. 13 non-platform domains link to the full set.
+- [the common crawl apr-jun 2026 index is live](https://crawlgraph.com/blog/common-crawl-apr-jun-2026-release) (2026-07-24): The new crawlgraph index combines CC-MAIN-2026-17, CC-MAIN-2026-21, and CC-MAIN-2026-25 into 121.1M domains and 3.90B domain-level links.
+- [programmatic backlink research: 5 api recipes](https://crawlgraph.com/blog/backlink-api-recipes) (2026-07-12): get a free API key, pull one domain's referring sites, filter by authority, compare competitors, feed an automation, and connect hosted MCP — with copyable code for every step.
+- [8 domains link to every major fintech app (and they are all press or capital)](https://crawlgraph.com/blog/who-links-to-every-fintech-app) (2026-07-06): we pulled the backlinks of 8 big fintech apps from common crawl. the 8 domains that link to all of them are finance trade press, newsletters, and the VC/startup databases. no integrations, no dev tools. the niche runs on trust and money.
+- [crawlgraph now has a free API tier (15 backlink calls a month, no card)](https://crawlgraph.com/blog/free-backlink-api) (2026-07-03): request a key on the docs page and it lands in your inbox. 15 backlink lookups a month on Common Crawl's open web graph, forever free. connect over hosted MCP or run the local npm server.
+- [only 5 domains link to every major AI agent framework (and the shelf is still being built)](https://crawlgraph.com/blog/who-links-to-every-ai-agent-framework) (2026-07-02): we pulled the backlinks of 8 AI agent frameworks from common crawl. only 5 domains link to all of them, and they are not tech media. the niche's link graph is dev platforms plus a brand-new crop of agent directories you can still get into.
+- [only 2 domains link to every major CRM (and that is the lesson)](https://crawlgraph.com/blog/who-links-to-every-crm) (2026-07-01): we pulled the backlinks of the 8 biggest CRMs from common crawl. only 2 domains link to all of them, both integration hubs. compare that to SEO tools, where 37 did. the shape of a niche's link graph tells you the strategy.
+- [the 37 domains that link to every major SEO tool](https://crawlgraph.com/blog/who-links-to-every-seo-tool) (2026-06-30): we pulled the backlinks of 8 major seo tools from common crawl. 37 domains link to all of them, and the list is the seo trade press plus the 'best seo tools' roundups. here is the playbook that falls out of it.
+- [watch: steal your competitor's backlinks (free 2-minute walkthrough)](https://crawlgraph.com/blog/watch-steal-competitor-backlinks) (2026-06-17): a short walkthrough of crawlgraph's free gap analysis: find every site linking to your competitor but not you, pull the contact email, and send the pitch - without an ahrefs or semrush subscription.
+- [only 6 domains link to every major email marketing tool](https://crawlgraph.com/blog/who-links-to-every-email-marketing-tool) (2026-06-05): we ran the same backlink-overlap study on the 8 biggest email tools. the overlap almost vanished - only 6 domains link to all of them. that collapse is itself the most useful finding.
+- [the 34 domains that link to every major ai writing tool](https://crawlgraph.com/blog/who-links-to-every-ai-writing-tool) (2026-06-05): we pulled the backlinks of the 8 biggest ai writing tools from common crawl. 34 domains link to all of them, and the list is almost entirely ai-tool directories and ai-news media. here is the playbook that falls out of it.
+- [the 27 domains that link to every major website builder](https://crawlgraph.com/blog/who-links-to-every-website-builder) (2026-06-04): we pulled the highest-authority backlinks of the 8 biggest website builders from common crawl. 9,189 domains link to at least one. only 27 link to all eight, and they reveal a very different playbook than you would guess.
+- [the 35 domains that link to every major project management tool](https://crawlgraph.com/blog/who-links-to-every-project-management-tool) (2026-06-03): we pulled the highest-authority backlinks of the 8 biggest project management tools from common crawl. 9,347 domains link to at least one of them. only 35 link to all eight, and that short list is the entire link-building playbook for the niche.
+- [find link building prospects with ai](https://crawlgraph.com/blog/find-link-prospects-with-ai) (2026-06-02): connect an ai assistant to a live backlink data source over mcp and let it run gap analysis, rank outreach targets, and draft angles - no spreadsheet wrangling.
+- [how to run a backlink gap analysis for free](https://crawlgraph.com/blog/backlink-gap-analysis-free) (2026-06-02): a gap analysis finds the domains that link to your competitors but not to you. that overlap is the highest-roi prospect list in link building. here is a free, step-by-step way to build one.
+- [free backlink gap analysis without ahrefs (2026)](https://crawlgraph.com/blog/free-backlink-gap-analysis-without-ahrefs) (2026-06-02): the domains that link to your competitors but not you are the best link prospects you have. here is how to find them for free, no ahrefs or semrush subscription.
+- [crawlgraph vs ubersuggest - the budget backlink question](https://crawlgraph.com/blog/crawlgraph-vs-ubersuggest) (2026-06-01): ubersuggest is the default cheap all-rounder. crawlgraph goes deeper on one thing - backlinks - from open data, for a cheaper lifetime price. which budget tool fits which job.
+- [crawlgraph vs majestic - two link-only tools, very different prices](https://crawlgraph.com/blog/crawlgraph-vs-majestic) (2026-06-01): majestic is the deepest pure-backlink index there is, with trust flow and a historic archive. crawlgraph is a quarterly common-crawl snapshot for $99 once. when each one is the right call.
+- [crawlgraph vs moz - domain authority, without the subscription](https://crawlgraph.com/blog/crawlgraph-vs-moz) (2026-06-01): moz gave the industry the DA score everyone quotes. crawlgraph gives you the same referring-domain picture from open data, once, for $99. here's the honest split.
+- [an honest take: when to use ahrefs vs when to use crawlgraph](https://crawlgraph.com/blog/ahrefs-vs-crawlgraph-honest) (2026-05-29): ahrefs is worth $129/month for continuous link-signal monitoring. crawlgraph is worth $99 once for outreach prospecting. here's why both are correct.
+- [google search console backlinks: what it shows](https://crawlgraph.com/blog/google-search-console-backlinks) (2026-05-23): gsc is the only free backlink data source straight from google - but it caps the report at ~1,000 referring domains, only shows data for sites you've verified, and surfaces a filtered subset of what google actually indexed. here's the full walkthrough plus how to get around the limits.
+- [where ahrefs and moz get their backlink data](https://crawlgraph.com/blog/where-ahrefs-gets-backlink-data) (2026-05-23): ahrefs, moz, semrush, and majestic each run their own proprietary crawler and ship a curated index - which is why no two backlink tools ever agree. here's the methodology, the size claims, and why common crawl is the only open alternative.
+- [bing webmaster tools backlinks (free, no signup)](https://crawlgraph.com/blog/bing-webmaster-backlinks) (2026-05-23): bing webmaster tools shows backlink data for free - and unlike google search console, it surfaces backlinks for sites you don't own through the similar sites report. here's the full walkthrough, the gsc comparison, and the export workflow.
+- [how long does google take to count a backlink?](https://crawlgraph.com/blog/how-long-google-counts-backlinks) (2026-05-02): "how long for google to count a backlink" is actually three questions: how long to crawl, how long to index, and how long for it to influence rankings. the answers are days, weeks, and months - and each phase has different bottlenecks.
+- [referring domain vs backlink - the difference](https://crawlgraph.com/blog/referring-domain-vs-backlink) (2026-05-02): a backlink is one link. a referring domain is one site - it can give you ten thousand links and still count as one. google weighs referring domain count more heavily than raw backlinks, and the ratio between them is itself a quality signal.
+- [common crawl release schedule (next crawl)](https://crawlgraph.com/blog/common-crawl-release-schedule) (2026-05-02): common crawl publishes new web crawls every 1-2 months. here's the recent release cadence, crawlgraph's current composite, and why the lag matters for backlink freshness.
+- [how to get backlinks for free in 2026](https://crawlgraph.com/blog/how-to-find-backlinks-for-free-2026) (2026-05-02): free options for surveying a backlink profile - gsc, bing webmaster, crawlgraph's free tier - and what each one actually shows. for full lists, $99 once.
+- [crawlgraph vs semrush - focused vs all-in-one](https://crawlgraph.com/blog/crawlgraph-vs-semrush) (2026-04-28): semrush ships fifty things. crawlgraph ships one. here's why - for a real subset of seos - that's the point.
+- [ahrefs vs crawlgraph - what you actually pay for](https://crawlgraph.com/blog/ahrefs-vs-crawlgraph) (2026-04-22): a $99 lifetime license vs $129/mo. broken down by feature, by api call, by what the data really shows.
+- [common crawl, explained for SEOs](https://crawlgraph.com/blog/common-crawl-explained) (2026-04-08): the 4.4B-edge open dataset that quietly powers half the AI training runs - and how we turn it into rank intelligence.
+
+## Pricing
+
+- Free: 5 referring domains shown per query, no signup.
+- Lifetime: $99 once, unlimited queries, full results, CSV/JSON export, gap analysis.
+- SEO Fix addon: $5/month, optional. One AI-generated high-impact fix emailed monthly.
+
+## Data source
+
+Common Crawl hyperlink graph - open dataset published quarterly at https://commoncrawl.org/web-graphs. CrawlGraph imports the vertices (~850 MB) and edges (~16 GB) files, queries them via DuckDB, caches per-domain results in SQLite for 30 days.
+
+## Contact
+
+- Email: petteri@searchenginewizards.fi
+- Site: https://crawlgraph.com
+
+## Optional
+
+- [Privacy policy](https://crawlgraph.com/privacy)
+- [Terms of service](https://crawlgraph.com/terms)

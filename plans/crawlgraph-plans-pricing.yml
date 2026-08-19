@@ -1,0 +1,92 @@
+generated: '2026-08-13'
+method: searched
+source: https://crawlgraph.com/llms.txt
+also_from:
+  - https://crawlgraph.com/            # pricing section on the landing page
+  - https://crawlgraph.com/docs/api    # API tier quotas
+  - https://crawlgraph.com/terms       # payment + "lifetime" definition
+plan_count: 3
+note: >-
+  There is no standalone pricing page: https://crawlgraph.com/pricing returns HTTP 200 but is a
+  SOFT-404 — it renders the app's "pricing isn't a valid domain name" fallback rather than a
+  pricing document. The real pricing lives in a section of the landing page and, machine-readably,
+  in the provider's own llms.txt. Pricing is unusually plain for this category: one lifetime price,
+  no subscription, no seats, no credit packs.
+
+model: one-time-purchase
+currency_options: [USD, EUR]
+payment_processor: Stripe
+self_serve: true
+sales_gate: false
+free_tier: true
+trial: not-applicable
+
+plans:
+  - name: Free
+    price: 0
+    currency: USD
+    billing_period: none
+    signup_required: false
+    included:
+      web_results_per_query: 5
+      api_backlink_calls_per_month: 15
+      gap_analysis: false
+      export: false
+    api_access: true
+    api_key: self-serve by email via POST /api/v1/free-key (no card, one key per email)
+    limits_ref: rate-limits/crawlgraph-rate-limits.yml
+    note: >-
+      Two distinct free surfaces. The web checker shows the first 5 referring domains for any
+      domain with no signup at all. The free API tier is separate: 15 backlink calls per calendar
+      month against a mailed cg_live_ key.
+
+  - name: Lifetime
+    price: 99
+    currency: USD
+    price_alt: {amount: 99, currency: EUR}
+    billing_period: one-time
+    recurring: false
+    included:
+      web_results_per_query: full result set, up to 100000 rows per query
+      api_backlink_calls_per_month: 1000
+      gap_analysis_jobs_per_month: 50
+      gap_analysis: true
+      outreach_targets: true
+      export: [CSV, JSON]
+      export_row_limits: none
+      multiple_releases: true
+      pagination: true
+      contact_email_per_target: true
+    overage: none documented
+    seats: not per-seat
+    note: >-
+      "Lifetime" is defined in the terms as "for as long as we operate the service", with a
+      committed minimum of 24 months of availability from the purchase date. That is an explicit,
+      time-bounded commitment rather than an open-ended promise — worth surfacing to a buyer.
+    limits_ref: rate-limits/crawlgraph-rate-limits.yml
+
+  - name: SEO Fix add-on
+    price: 5
+    currency: USD
+    billing_period: month
+    recurring: true
+    optional: true
+    included:
+      monthly_ai_fix_email: 1
+    note: One AI-generated high-impact fix emailed monthly. Optional add-on, not a plan tier.
+
+enterprise:
+  published: false
+  note: No enterprise tier, no "contact sales" tier, no custom pricing is advertised.
+
+fair_use:
+  note: >-
+    Terms reserve the right to rate-limit, throttle or suspend accounts for "bulk scraping, resale,
+    or coordinated abuse", and state that public-API fair-use limits may change at the operator's
+    discretion.
+
+x-evidence:
+  - {url: 'https://crawlgraph.com/llms.txt', status: 200, note: '## Pricing section, machine-readable'}
+  - {url: 'https://crawlgraph.com/', status: 200, note: pricing section on the landing page}
+  - {url: 'https://crawlgraph.com/pricing', status: 200, note: 'SOFT-404 — renders "pricing isn''t a valid domain name"; not a pricing page'}
+  - {url: 'https://crawlgraph.com/terms', status: 200, note: 'defines "lifetime" and the 24-month availability commitment'}

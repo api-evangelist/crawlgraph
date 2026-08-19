@@ -1,0 +1,128 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  Live probes of https://crawlgraph.com (OpenAPI, MCP, /.well-known/) plus the published API
+  reference at https://crawlgraph.com/docs/api.
+summary: >-
+  CrawlGraph conforms to the two standards that matter most for agent access — OpenAPI 3.1 and
+  MCP — and to RFC 9116. It conforms to none of the enterprise governance standards, and no
+  compliance certification of any kind is published.
+
+standards:
+  - id: openapi
+    conforms: true
+    version: 3.1.0
+    evidence: >-
+      Machine-readable OpenAPI 3.1.0 served anonymously at
+      https://crawlgraph.com/api/v1/openapi.json (HTTP 200, application/json), 6 operations,
+      20 component schemas. Regenerated on every deploy. Explicitly advertised in docs section 8.
+  - id: mcp
+    conforms: true
+    evidence: >-
+      Hosted remote MCP server at https://crawlgraph.com/mcp over Streamable HTTP. Probed
+      anonymously: tools/list returned HTTP 200 with 4 tools, each carrying a draft-07
+      inputSchema AND outputSchema plus behavioural annotations. Also published as a local stdio
+      server on npm (crawlgraph-mcp, MIT).
+  - id: json-schema
+    conforms: true
+    version: draft-07 (MCP tools) / 2020-12 (via OpenAPI 3.1)
+    evidence: >-
+      All four MCP tools publish $schema http://json-schema.org/draft-07/schema# input and output
+      schemas with additionalProperties false. The OpenAPI 3.1 component schemas are JSON Schema
+      2020-12 by definition.
+  - id: rfc9116-security-txt
+    conforms: true
+    evidence: >-
+      https://crawlgraph.com/.well-known/security.txt returns 200 with Contact, Expires (2027-08-07,
+      unexpired), Preferred-Languages and Canonical. No Policy field.
+  - id: http-bearer-auth
+    conforms: true
+    evidence: 'RFC 6750-style Authorization: Bearer with cg_live_-prefixed keys on every /api/v1/* route.'
+  - id: rate-limit-headers
+    conforms: partial
+    evidence: >-
+      Seven documented rate-limit/tracing response headers on every 2xx and 429, but in the
+      vendor-prefixed X-RateLimit-* form, not the IETF draft RateLimit-* / RateLimit-Policy form.
+  - id: rfc9457-problem-details
+    conforms: false
+    evidence: >-
+      Errors use a vendor envelope {error, message, request_id} as application/json. No
+      application/problem+json is served or declared.
+  - id: rfc8594-sunset-header
+    conforms: false
+    evidence: No Sunset or Deprecation headers documented or declared; no operation carries deprecated true.
+  - id: oauth2
+    conforms: false
+    evidence: 'No OAuth. /.well-known/oauth-authorization-server returns 404.'
+  - id: oidc
+    conforms: false
+    evidence: '/.well-known/openid-configuration returns 404.'
+  - id: rfc9728-protected-resource-metadata
+    conforms: false
+    evidence: '/.well-known/oauth-protected-resource returns 404 — the MCP endpoint publishes no protected-resource metadata.'
+  - id: a2a-agent-card
+    conforms: false
+    evidence: '/.well-known/agent-card.json and /.well-known/agent.json both return 404.'
+  - id: rfc9727-api-catalog
+    conforms: false
+    evidence: '/.well-known/api-catalog returns 404.'
+  - id: asyncapi
+    conforms: false
+    evidence: >-
+      No event surface. Docs section 7 states "Webhooks are coming in a future version"; polling
+      the gap-analysis job endpoint is the only async pattern.
+  - id: graphql
+    conforms: false
+    evidence: No GraphQL endpoint published or documented.
+  - id: llms-txt
+    conforms: true
+    evidence: >-
+      https://crawlgraph.com/llms.txt returns 200 text/plain, well-formed llms.txt with H1,
+      blockquote summary, and sectioned link lists including the API docs and the MCP server.
+  - id: idempotency-keys
+    conforms: false
+    evidence: >-
+      No Idempotency-Key header documented. Mitigated by the API being read-mostly (4 of 6
+      operations are safe; all 4 MCP tools carry idempotentHint true).
+  - id: pagination
+    conforms: false
+    evidence: >-
+      No cursor/page/offset parameter on any operation. Result size is bounded by `limit`
+      (max 10000) with explicit truncation counters instead.
+
+compliance:
+  certifications_published: []
+  trust_center: false
+  soc2: not published
+  iso27001: not published
+  gdpr:
+    stated: partial
+    evidence: >-
+      The privacy policy at https://crawlgraph.com/privacy names a lawful basis, describes data
+      minimisation, states 30-day server-log retention, and discloses Stripe, Google Analytics 4
+      and Meta Pixel as processors with consent gating on the analytics. The operator is
+      Search Engine Wizards, based in Finland (Preferred-Languages en, fi) — i.e. EU. No DPA,
+      subprocessor list, or GDPR compliance page is published.
+  note: >-
+    No certification, audit report, trust center or compliance program of any kind is published.
+    This is a solo-operator SaaS; the absence is expected, not concealed.
+
+data_provenance:
+  upstream: Common Crawl hyperlink graph (https://commoncrawl.org/web-graphs)
+  license_of_source: open dataset
+  methodology_published: true
+  evidence: >-
+    The provider publishes its methodology (DuckDB over Common Crawl vertices+edges files,
+    30-day SQLite result cache), names the exact release in the site footer
+    (cc-main-2026-apr-may-jun), and open-sources its study datasets under CC-BY at
+    github.com/pucilpet/crawlgraph-datasets. Reproducibility is advertised as a feature
+    ("open methodology · reproducible").
+
+x-evidence:
+  - {url: 'https://crawlgraph.com/api/v1/openapi.json', status: 200}
+  - {url: 'https://crawlgraph.com/mcp', status: 200, note: POST tools/list, anonymous}
+  - {url: 'https://crawlgraph.com/llms.txt', status: 200}
+  - {url: 'https://crawlgraph.com/.well-known/security.txt', status: 200}
+  - {url: 'https://crawlgraph.com/.well-known/oauth-authorization-server', status: 404}
+  - {url: 'https://crawlgraph.com/.well-known/agent-card.json', status: 404}
+  - {url: 'https://crawlgraph.com/.well-known/api-catalog', status: 404}

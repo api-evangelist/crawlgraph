@@ -1,0 +1,841 @@
+openapi: 3.1.0
+info:
+  title: CrawlGraph
+  description: Free backlink intelligence powered by Common Crawl's hyperlink graph.
+  version: 1.2.0
+  contact:
+    name: CrawlGraph support
+    email: petteri@searchenginewizards.fi
+    url: https://crawlgraph.com/docs/api
+  termsOfService: https://crawlgraph.com/terms
+paths:
+  /api/v1/backlinks:
+    post:
+      tags:
+      - v1
+      summary: Look up referring domains for a target domain
+      description: 'Public-API backlink lookup.
+
+
+        Validates ``domain`` and ``release_id`` (400 ``validation_error`` on
+
+        failure), charges one call against the caller''s monthly
+
+        ``backlinks`` quota (429 ``quota_exceeded`` on overflow), then runs
+
+        the same DuckDB query the internal route uses and returns the
+
+        sliced results.'
+      operationId: v1_lookup_backlinks_api_v1_backlinks_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1BacklinksBody'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1BacklinksResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/free-key:
+    post:
+      tags:
+      - v1
+      summary: Request Free Key
+      description: 'Request a free-tier API key (15 backlink calls per month; gap
+
+        analysis requires the $99 lifetime tier). The key is emailed to the address you provide - it is
+        never
+
+        returned in this response. One active key per email. Lifetime
+
+        customers manage keys at /account instead.'
+      operationId: request_free_key_api_v1_free_key_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FreeKeyRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Request Free Key Api V1 Free Key Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security: []
+  /api/v1/releases:
+    get:
+      tags:
+      - v1
+      summary: List available Common Crawl releases
+      description: 'Return the list of releases the API can serve queries from.
+
+
+        Does NOT charge against the caller''s quota.'
+      operationId: v1_list_releases_api_v1_releases_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1ReleasesResponse'
+  /api/v1/gap-analysis:
+    post:
+      tags:
+      - v1
+      summary: Submit an async gap-analysis job
+      description: 'Queue a gap-analysis job and return a poll URL.
+
+
+        Validates the input domains, charges one call against the caller''s
+
+        monthly ``gap`` quota (429 ``quota_exceeded`` on overflow), creates
+
+        a row in ``export_jobs`` (``kind="gap"``), and schedules the worker
+
+        via FastAPI''s ``BackgroundTasks``. The poll endpoint reads the same
+
+        table and is owner-scoped.'
+      operationId: v1_gap_submit_api_v1_gap_analysis_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1GapBody'
+        required: true
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1GapSubmitResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/gap-analysis/{job_id}:
+    get:
+      tags:
+      - v1
+      summary: Poll a gap-analysis job
+      description: 'Return the current status of a gap-analysis job.
+
+
+        Owner-scoped - jobs that don''t exist or that belong to another user
+
+        both return ``404 not_found`` (``get_job_for_user`` enforces the
+
+        ownership check; we can''t distinguish the two cases, which is the
+
+        point - never leak another user''s job ids).'
+      operationId: v1_gap_poll_api_v1_gap_analysis__job_id__get
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Job Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1GapStatusResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/changes:
+    get:
+      tags:
+      - v1
+      summary: Compare inbound-link observations across indexed releases
+      description: Return observed additions, absences, and authority movement.
+      operationId: v1_changes_api_v1_changes_get
+      parameters:
+      - name: domain
+        in: query
+        required: true
+        schema:
+          type: string
+          maxLength: 253
+          description: Target domain to compare.
+          title: Domain
+        description: Target domain to compare.
+      - name: from
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            maxLength: 64
+          - type: 'null'
+          description: Older release id. Defaults to the older release in the newest queryable pair, or
+            to an explicit 'to' release's nearest queryable ancestor.
+          title: From
+        description: Older release id. Defaults to the older release in the newest queryable pair, or
+          to an explicit 'to' release's nearest queryable ancestor.
+      - name: to
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            maxLength: 64
+          - type: 'null'
+          description: Newer release id. Defaults to the newer release in the newest queryable pair.
+          title: To
+        description: Newer release id. Defaults to the newer release in the newest queryable pair.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/V1ChangesAvailableResponse'
+                - $ref: '#/components/schemas/V1ChangesUnavailableResponse'
+                title: Response V1 Changes Api V1 Changes Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    AttributionPayload:
+      properties:
+        utm_source:
+          anyOf:
+          - type: string
+            maxLength: 64
+          - type: 'null'
+          title: Utm Source
+        utm_medium:
+          anyOf:
+          - type: string
+            maxLength: 64
+          - type: 'null'
+          title: Utm Medium
+        utm_campaign:
+          anyOf:
+          - type: string
+            maxLength: 64
+          - type: 'null'
+          title: Utm Campaign
+        utm_content:
+          anyOf:
+          - type: string
+            maxLength: 128
+          - type: 'null'
+          title: Utm Content
+        utm_term:
+          anyOf:
+          - type: string
+            maxLength: 128
+          - type: 'null'
+          title: Utm Term
+        landing_path:
+          anyOf:
+          - type: string
+            maxLength: 256
+          - type: 'null'
+          title: Landing Path
+        referrer_host:
+          anyOf:
+          - type: string
+            maxLength: 253
+          - type: 'null'
+          title: Referrer Host
+      type: object
+      title: AttributionPayload
+    FreeKeyRequest:
+      properties:
+        email:
+          type: string
+          format: email
+          title: Email
+        attribution:
+          anyOf:
+          - $ref: '#/components/schemas/AttributionPayload'
+          - type: 'null'
+      type: object
+      required:
+      - email
+      title: FreeKeyRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    V1BacklinkItem:
+      properties:
+        linking_domain:
+          type: string
+          title: Linking Domain
+        num_hosts:
+          type: integer
+          title: Num Hosts
+        tld:
+          type: string
+          title: Tld
+        cg_authority:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cg Authority
+        cg_rank:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cg Rank
+      type: object
+      required:
+      - linking_domain
+      - num_hosts
+      - tld
+      title: V1BacklinkItem
+      description: 'One referring-domain row in the response.
+
+
+        ``tld`` is the last label of ``linking_domain`` (no leading dot).
+
+        ``cg_authority`` is a 0..100 log-rank percentile from the Common
+
+        Crawl harmonic-centrality ranking (higher = more authoritative).
+
+        ``cg_rank`` is the raw PageRank position across the whole graph
+
+        (1 = top-ranked domain on the web). Both are NULL for domains
+
+        that don''t appear in the ranks file.'
+    V1BacklinksBody:
+      properties:
+        domain:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Domain
+          description: Target domain to look up backlinks for, e.g. 'example.com'.
+        release_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Release Id
+          description: Common Crawl release id. Defaults to the latest release.
+        limit:
+          type: integer
+          maximum: 10000.0
+          minimum: 1.0
+          title: Limit
+          description: Max number of result rows to return (1..10000).
+          default: 1000
+        sort:
+          type: string
+          enum:
+          - authority
+          - hosts
+          title: Sort
+          description: Result ordering. 'authority' (default) sorts by cg_authority DESC then num_hosts
+            DESC. 'hosts' preserves the legacy num_hosts DESC ordering.
+          default: authority
+      type: object
+      required:
+      - domain
+      title: V1BacklinksBody
+      description: Request body for ``POST /api/v1/backlinks``.
+    V1BacklinksResponse:
+      properties:
+        domain:
+          type: string
+          title: Domain
+        release_id:
+          type: string
+          title: Release Id
+        release_label:
+          type: string
+          title: Release Label
+        total_linking_domains:
+          type: integer
+          title: Total Linking Domains
+          description: Number of distinct linking domains retrieved before the `limit` slice was applied.
+        returned:
+          type: integer
+          title: Returned
+          description: Number of rows actually included in `results`.
+        cg_authority:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cg Authority
+          description: 0..100 log-rank percentile for the queried `domain`. NULL when the domain is missing
+            from the ranks file.
+        cg_rank:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cg Rank
+          description: Raw PageRank position of the queried `domain` (1 = top). NULL when the domain is
+            missing from the ranks file.
+        results:
+          items:
+            $ref: '#/components/schemas/V1BacklinkItem'
+          type: array
+          title: Results
+      type: object
+      required:
+      - domain
+      - release_id
+      - release_label
+      - total_linking_domains
+      - returned
+      - results
+      title: V1BacklinksResponse
+      description: Top-level response body for ``POST /api/v1/backlinks``.
+    V1ChangesAuthorityMovement:
+      properties:
+        linking_domain:
+          type: string
+          title: Linking Domain
+        from_authority:
+          type: integer
+          title: From Authority
+        to_authority:
+          type: integer
+          title: To Authority
+        delta:
+          type: integer
+          title: Delta
+      type: object
+      required:
+      - linking_domain
+      - from_authority
+      - to_authority
+      - delta
+      title: V1ChangesAuthorityMovement
+    V1ChangesAvailableResponse:
+      properties:
+        domain:
+          type: string
+          title: Domain
+        to_release:
+          $ref: '#/components/schemas/V1ChangesRelease'
+        counts:
+          $ref: '#/components/schemas/V1ChangesCounts'
+        added:
+          items:
+            $ref: '#/components/schemas/V1ChangesObservedDomain'
+          type: array
+          title: Added
+          description: Referring domains observed only in the newer snapshot.
+        removed:
+          items:
+            $ref: '#/components/schemas/V1ChangesObservedDomain'
+          type: array
+          title: Removed
+          description: Referring domains observed in the older snapshot but absent from the newer snapshot.
+        authority_moved:
+          items:
+            $ref: '#/components/schemas/V1ChangesAuthorityMovement'
+          type: array
+          title: Authority Moved
+        truncated:
+          type: boolean
+          title: Truncated
+        cap:
+          type: integer
+          title: Cap
+        snapshot_caveat:
+          type: string
+          title: Snapshot Caveat
+        comparison_available:
+          type: boolean
+          enum:
+          - true
+          const: true
+          title: Comparison Available
+        from_release:
+          $ref: '#/components/schemas/V1ChangesRelease'
+      type: object
+      required:
+      - domain
+      - to_release
+      - counts
+      - added
+      - removed
+      - authority_moved
+      - truncated
+      - cap
+      - snapshot_caveat
+      - comparison_available
+      - from_release
+      title: V1ChangesAvailableResponse
+    V1ChangesCounts:
+      properties:
+        from_snapshot:
+          type: integer
+          title: From Snapshot
+        to_snapshot:
+          type: integer
+          title: To Snapshot
+        added:
+          type: integer
+          title: Added
+          description: Referring domains observed only in the newer snapshot.
+        removed:
+          type: integer
+          title: Removed
+          description: Referring domains absent from the newer snapshot.
+        authority_moved:
+          type: integer
+          title: Authority Moved
+      type: object
+      required:
+      - from_snapshot
+      - to_snapshot
+      - added
+      - removed
+      - authority_moved
+      title: V1ChangesCounts
+    V1ChangesObservedDomain:
+      properties:
+        linking_domain:
+          type: string
+          title: Linking Domain
+        num_hosts:
+          type: integer
+          title: Num Hosts
+        cg_authority:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cg Authority
+      type: object
+      required:
+      - linking_domain
+      - num_hosts
+      title: V1ChangesObservedDomain
+    V1ChangesRelease:
+      properties:
+        id:
+          type: string
+          title: Id
+        label:
+          type: string
+          title: Label
+      type: object
+      required:
+      - id
+      - label
+      title: V1ChangesRelease
+    V1ChangesUnavailableResponse:
+      properties:
+        domain:
+          type: string
+          title: Domain
+        to_release:
+          $ref: '#/components/schemas/V1ChangesRelease'
+        counts:
+          $ref: '#/components/schemas/V1ChangesCounts'
+        added:
+          items:
+            $ref: '#/components/schemas/V1ChangesObservedDomain'
+          type: array
+          title: Added
+          description: Referring domains observed only in the newer snapshot.
+        removed:
+          items:
+            $ref: '#/components/schemas/V1ChangesObservedDomain'
+          type: array
+          title: Removed
+          description: Referring domains observed in the older snapshot but absent from the newer snapshot.
+        authority_moved:
+          items:
+            $ref: '#/components/schemas/V1ChangesAuthorityMovement'
+          type: array
+          title: Authority Moved
+        truncated:
+          type: boolean
+          title: Truncated
+        cap:
+          type: integer
+          title: Cap
+        snapshot_caveat:
+          type: string
+          title: Snapshot Caveat
+        comparison_available:
+          type: boolean
+          enum:
+          - false
+          const: false
+          title: Comparison Available
+        from_release:
+          anyOf:
+          - $ref: '#/components/schemas/V1ChangesRelease'
+          - type: 'null'
+        message:
+          type: string
+          title: Message
+      type: object
+      required:
+      - domain
+      - to_release
+      - counts
+      - added
+      - removed
+      - authority_moved
+      - truncated
+      - cap
+      - snapshot_caveat
+      - comparison_available
+      - from_release
+      - message
+      title: V1ChangesUnavailableResponse
+    V1GapBody:
+      properties:
+        my_domain:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: My Domain
+          description: Your domain (the one you want to find gaps for).
+        competitor_domains:
+          items:
+            type: string
+          type: array
+          maxItems: 5
+          minItems: 1
+          title: Competitor Domains
+          description: 1..5 competitor domains. Linking domains that link to any of these but not to ``my_domain``
+            are returned as gaps.
+      type: object
+      required:
+      - my_domain
+      - competitor_domains
+      title: V1GapBody
+      description: Request body for ``POST /api/v1/gap-analysis``.
+    V1GapResultBody:
+      properties:
+        my_domain:
+          type: string
+          title: My Domain
+        competitor_domains:
+          items:
+            type: string
+          type: array
+          title: Competitor Domains
+        gaps:
+          items:
+            $ref: '#/components/schemas/V1GapResultGap'
+          type: array
+          title: Gaps
+        total_gaps:
+          type: integer
+          title: Total Gaps
+          description: '``len(gaps)`` - convenience for clients.'
+        truncated:
+          type: boolean
+          title: Truncated
+          description: True when the result was clipped to the export cap (25,000 gaps); more linking
+            domains exist than were returned.
+          default: false
+      type: object
+      required:
+      - my_domain
+      - competitor_domains
+      - gaps
+      - total_gaps
+      title: V1GapResultBody
+      description: The ``result`` object on a completed job.
+    V1GapResultGap:
+      properties:
+        linking_domain:
+          type: string
+          title: Linking Domain
+          description: Domain that links to one or more competitors but not to ``my_domain``.
+        found_on:
+          items:
+            type: string
+          type: array
+          title: Found On
+          description: Subset of the request's ``competitor_domains`` that this linking_domain points
+            at.
+      type: object
+      required:
+      - linking_domain
+      - found_on
+      title: V1GapResultGap
+      description: One gap row in a completed job's result.
+    V1GapStatusResponse:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+        status:
+          type: string
+          title: Status
+          description: One of "queued" | "running" | "completed" | "failed".
+        progress_pct:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Progress Pct
+          description: 0..100 progress hint while ``status == "running"``.
+        started_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Started At
+          description: ISO 8601 timestamp; populated once the worker picks up the job.
+        completed_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Completed At
+          description: ISO 8601 timestamp; populated when ``status == "completed"``.
+        result:
+          anyOf:
+          - $ref: '#/components/schemas/V1GapResultBody'
+          - type: 'null'
+          description: Populated when ``status == "completed"``.
+        error:
+          anyOf:
+          - type: object
+          - type: 'null'
+          title: Error
+          description: 'Populated when ``status == "failed"``. Shape: ``{"code": "...", "message": "..."}``.'
+      type: object
+      required:
+      - job_id
+      - status
+      title: V1GapStatusResponse
+      description: '``GET /api/v1/gap-analysis/{job_id}`` response.
+
+
+        Single model with optional fields rather than a discriminated union -
+
+        consumers can branch on ``status`` and pick out the field set
+
+        relevant to that state.'
+    V1GapSubmitResponse:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+        status:
+          type: string
+          title: Status
+          description: Always ``"queued"`` on submit.
+        poll_url:
+          type: string
+          title: Poll Url
+          description: GET this URL to poll job status.
+      type: object
+      required:
+      - job_id
+      - status
+      - poll_url
+      title: V1GapSubmitResponse
+      description: '``202`` response body when a job is queued.'
+    V1ReleaseItem:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Release identifier, e.g. 'cc-main-2026-jan-feb-mar'.
+        label:
+          type: string
+          title: Label
+          description: Human label for the release, e.g. 'Jan-Mar 2026'.
+        available:
+          type: boolean
+          title: Available
+          description: Whether manifest intent and the corresponding DuckDB artifact both allow queries
+            for this release.
+      type: object
+      required:
+      - id
+      - label
+      - available
+      title: V1ReleaseItem
+      description: One Common Crawl release the API can serve queries from.
+    V1ReleasesResponse:
+      properties:
+        releases:
+          items:
+            $ref: '#/components/schemas/V1ReleaseItem'
+          type: array
+          title: Releases
+      type: object
+      required:
+      - releases
+      title: V1ReleasesResponse
+      description: Top-level response body for ``GET /api/v1/releases``.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 'Bearer token. Keys are prefixed cg_live_ and are roughly 52 characters. Sent as `Authorization:
+        Bearer cg_live_<key>`. Every /api/v1/* route requires it except POST /api/v1/free-key, which is
+        unauthenticated. Documented at https://crawlgraph.com/docs/api section 2.'
+servers:
+- url: https://crawlgraph.com
+  description: CrawlGraph production API (paths carry the /api/v1 prefix)
+security:
+- bearerAuth: []
+tags:
+- name: v1
+  description: CrawlGraph public REST API v1 — backlink lookups, Common Crawl release discovery, async
+    gap analysis, and cross-release change comparison.

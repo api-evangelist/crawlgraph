@@ -1,0 +1,40 @@
+generated: '2026-08-13'
+method: generated
+source: >-
+  Packaged Agent Skills generated from CrawlGraph's live OpenAPI 3.1.0
+  (openapi/_original/crawlgraph-openapi.json, fetched from
+  https://crawlgraph.com/api/v1/openapi.json) and the live MCP tools/list
+  (mcp/crawlgraph-mcp-tools.json, probed at https://crawlgraph.com/mcp). Every step is grounded
+  in an operationId or tool name verified verbatim in those two documents; cross-cutting rules
+  cite ../authentication/, ../errors/, ../rate-limits/, ../conventions/ and ../mcp/.
+  No provider-published skills or AGENTS.md were found.
+skill_count: 4
+skills:
+  - file: crawlgraph-look-up-referring-domains.md
+    name: Look up referring domains for a domain
+    surface: rest
+    api: openapi/crawlgraph-v1-openapi.yml
+    operations: [request_free_key_api_v1_free_key_post, v1_list_releases_api_v1_releases_get, v1_lookup_backlinks_api_v1_backlinks_post]
+  - file: crawlgraph-run-a-competitor-gap-analysis.md
+    name: Run a competitor backlink gap analysis
+    surface: rest
+    api: openapi/crawlgraph-v1-openapi.yml
+    operations: [v1_gap_submit_api_v1_gap_analysis_post, v1_gap_poll_api_v1_gap_analysis__job_id__get, v1_lookup_backlinks_api_v1_backlinks_post]
+  - file: crawlgraph-find-warm-outreach-targets.md
+    name: Find warm outreach targets over MCP
+    surface: mcp
+    api: mcp/crawlgraph-mcp.yml
+    tools: [gap_outreach_targets, backlinks, releases]
+  - file: crawlgraph-compare-link-changes-across-releases.md
+    name: Compare link observations across Common Crawl releases
+    surface: rest
+    api: openapi/crawlgraph-v1-openapi.yml
+    operations: [v1_list_releases_api_v1_releases_get, v1_changes_api_v1_changes_get]
+coverage:
+  rest_operations_total: 6
+  rest_operations_covered: 6
+  mcp_tools_total: 4
+  mcp_tools_covered: 3
+  note: >-
+    gap_analysis is covered indirectly — the MCP skill points at gap_outreach_targets as the
+    stronger tool and the REST skill documents the underlying two-step job it wraps.

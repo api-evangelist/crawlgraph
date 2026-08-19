@@ -1,0 +1,54 @@
+generated: '2026-08-13'
+method: probed
+source: live probes of /.well-known/ on crawlgraph.com
+note: >-
+  One real hit: a served RFC 9116 security.txt. Everything else 404s. Note that crawlgraph.com
+  returns a genuine HTTP 404 for unknown /.well-known/* paths (it is a Next.js app with real
+  status codes), so these are true absences rather than SPA soft-200s. Separately, several
+  ordinary site paths (/pricing, /status, /changelog, /faq) DO soft-404: they return HTTP 200
+  carrying the app's "<path> isn't a valid domain name" fallback. Those are recorded as misses
+  elsewhere in this repo and must not be credited as published pages.
+
+hosts:
+  - host: https://crawlgraph.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 200
+        content_type: text/plain; charset=utf-8
+        file: crawlgraph-security.txt
+        real_document: true
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+      - path: /.well-known/mcp.json
+        status: 404
+
+security_txt:
+  served: true
+  url: https://crawlgraph.com/.well-known/security.txt
+  fields:
+    Contact: mailto:petteri@searchenginewizards.fi
+    Expires: '2027-08-07T11:05:56.074Z'
+    Preferred-Languages: en, fi
+    Canonical: https://crawlgraph.com/.well-known/security.txt
+  missing_recommended_fields: [Policy, Encryption, Acknowledgments, Hiring, CSAF]
+  unexpired: true
+  note: >-
+    Minimal but valid and unexpired. Carries Contact, Expires, Preferred-Languages and Canonical.
+    No Policy field, so there is no published vulnerability-disclosure policy to point at.
+
+x-evidence:
+  fetched: '2026-08-13'
+  probe_count: 9
+  hits: 1

@@ -1,0 +1,80 @@
+generated: '2026-08-13'
+method: searched
+source: https://crawlgraph.com/docs/api
+note: >-
+  Versioning policy is stated in prose; everything operational around it is absent. Probes
+  confirmed there is no status page and no changelog page — /status and /changelog both return
+  HTTP 200 but are SOFT-404s rendering the app's "isn't a valid domain name" fallback, so neither
+  may be credited as a published surface.
+
+versioning:
+  scheme: uri-path
+  current_version: v1
+  path_prefix: /api/v1
+  spec_version: 1.2.0        # info.version in the live OpenAPI
+  policy_documented: true
+  policy: >-
+    "The current API is at v1. Breaking changes will land on /api/v2 with a deprecation window -
+    your v1 integrations won't break overnight."
+  policy_url: https://crawlgraph.com/docs/api
+  note: >-
+    A named next-major path and a promised deprecation window, but no stated window LENGTH and no
+    dated notice mechanism. The spec's info.version (1.2.0) moves independently of the path
+    version and is regenerated on every deploy, so it is a build stamp rather than a contract.
+
+deprecation:
+  policy_documented: partial
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  deprecated_operations: []
+  note: >-
+    No RFC 8594 Sunset/Deprecation headers are documented or declared. No operation in the
+    OpenAPI carries `deprecated: true`. The deprecation commitment exists only as the prose
+    sentence above.
+
+changelog:
+  published: false
+  url: null
+  probed:
+    - {url: 'https://crawlgraph.com/changelog', status: 200, result: soft-404}
+  note: >-
+    Docs section 7 says "Check back here for changelogs" — an intent, not a changelog. No dated
+    API changelog exists at the time of probing. The product blog at https://crawlgraph.com/blog
+    is dated and does announce API changes (e.g. the free API tier on 2026-07-03, the
+    Apr-Jun 2026 index on 2026-07-24) but it is marketing content, not a change log.
+
+status_page:
+  published: false
+  url: null
+  probed:
+    - {url: 'https://crawlgraph.com/status', status: 200, result: soft-404}
+  note: >-
+    No status page and no third-party statuspage (no status.crawlgraph.com). Operational state is
+    not observable to an integrator.
+
+sla:
+  documented: false
+  uptime_commitment: null
+  availability_commitment: >-
+    The terms commit to operating the service for at least 24 months from a lifetime purchase
+    date. That is a service-existence commitment, not an availability SLA.
+  source: https://crawlgraph.com/terms
+
+data_lifecycle:
+  release_cadence: quarterly (follows Common Crawl)
+  current_release: cc-main-2026-apr-may-jun
+  reindex_lag: "within days of each Common Crawl release (provider claim, llms.txt)"
+  historical_span: 2017 through the latest 2026 release
+  job_retention: 7 days (gap-analysis jobs)
+  cache_retention: 30 days (per-domain query cache)
+  log_retention: 30 days (server logs, per privacy policy)
+
+roadmap_signals:
+  - {item: Webhooks, status: announced, source: 'https://crawlgraph.com/docs/api section 7', quote: 'Webhooks are coming in a future version.'}
+
+x-evidence:
+  - {url: 'https://crawlgraph.com/docs/api', status: 200}
+  - {url: 'https://crawlgraph.com/status', status: 200, note: soft-404}
+  - {url: 'https://crawlgraph.com/changelog', status: 200, note: soft-404}
+  - {url: 'https://crawlgraph.com/terms', status: 200}

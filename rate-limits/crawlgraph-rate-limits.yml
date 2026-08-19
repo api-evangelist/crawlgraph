@@ -1,0 +1,85 @@
+generated: '2026-08-13'
+method: searched
+source: https://crawlgraph.com/docs/api
+docs: https://crawlgraph.com/docs/api
+summary: >-
+  CrawlGraph publishes both the numbers and the runtime headers — quotas are monthly per-user and
+  tier-dependent, with a separate per-IP burst limiter. Section 4 of the API docs is the authority.
+limit_count: 4
+
+window_semantics:
+  window: calendar month, UTC
+  reset: hard reset on the 1st at 00:00 UTC
+  rollover: false
+  counted: only successful (2xx) calls
+  free_of_charge: [validation errors, auth failures, quota rejections, release_unavailable 409]
+  note: Failed gap jobs do not refund quota in v1.
+
+limits:
+  - resource: backlinks calls
+    scope: per-key/per-user
+    window: month
+    limit: 15
+    tier: free
+    endpoints: [POST /api/v1/backlinks, GET /api/v1/changes]
+    note: GET /api/v1/changes counts against the same backlinks bucket.
+  - resource: backlinks calls
+    scope: per-key/per-user
+    window: month
+    limit: 1000
+    tier: lifetime
+    endpoints: [POST /api/v1/backlinks, GET /api/v1/changes]
+  - resource: gap-analysis jobs
+    scope: per-key/per-user
+    window: month
+    limit: 50
+    tier: lifetime
+    endpoints: [POST /api/v1/gap-analysis]
+    note: Not available on the free tier at all.
+  - resource: releases lookups
+    scope: per-key/per-user
+    window: month
+    limit: unlimited
+    tier: [free, lifetime]
+    endpoints: [GET /api/v1/releases]
+    note: Not counted — "this is the caller learning what to pass."
+
+burst_limit:
+  scope: per-IP
+  limit: ~60
+  window: minute
+  applies_to: /api/v1/*
+  purpose: protects the backend; separate from the monthly quota
+
+response_headers:
+  present_on: every 2xx response and all 429s
+  headers:
+    - {name: X-RateLimit-Limit-Backlinks, meaning: "Monthly cap for the key's tier (15 or 1,000)."}
+    - {name: X-RateLimit-Remaining-Backlinks, meaning: Calls left this month.}
+    - {name: X-RateLimit-Limit-Gap, meaning: Monthly gap-job cap (50).}
+    - {name: X-RateLimit-Remaining-Gap, meaning: Gap jobs left this month.}
+    - {name: X-RateLimit-Reset, meaning: Unix timestamp of the next month rollover.}
+    - {name: X-Request-ID, meaning: Correlation id; quote on support tickets.}
+    - {name: Retry-After, meaning: Seconds until quota resets. Sent only on 429.}
+  standard: vendor-prefixed (X-RateLimit-*), not the IETF draft RateLimit-* form
+  note: >-
+    Unusually complete for a solo-operator API: separate limit AND remaining counters per quota
+    bucket, a reset timestamp, and Retry-After on exhaustion — an agent can pace itself without
+    trial and error. The headers are documented but NOT declared in the OpenAPI spec.
+
+exhaustion:
+  status: 429
+  error_code: quota_exceeded
+  body: '{ "error": "quota_exceeded", "message": "...", "request_id": "req_..." }'
+  retry_signal: Retry-After
+
+mcp:
+  shares_quota: true
+  note: The hosted MCP server uses the same bearer key and the same quotas as the HTTP API.
+
+response_size_caps:
+  - {endpoint: POST /api/v1/backlinks, field: limit, default: 1000, max: 10000}
+  - {endpoint: GET /api/v1/changes, cap: 100000, signal: 'truncated: true'}
+
+x-evidence:
+  - {url: 'https://crawlgraph.com/docs/api', status: 200, note: 'section 4 "Quotas & rate limits"'}

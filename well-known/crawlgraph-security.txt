@@ -1,0 +1,4 @@
+Contact: mailto:petteri@searchenginewizards.fi
+Expires: 2027-08-07T11:05:56.074Z
+Preferred-Languages: en, fi
+Canonical: https://crawlgraph.com/.well-known/security.txt

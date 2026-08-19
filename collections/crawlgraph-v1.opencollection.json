@@ -1,0 +1,129 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CrawlGraph",
+    "version": "1.2.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "v1",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Look up referring domains for a target domain",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://crawlgraph.com/api/v1/backlinks",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Public-API backlink lookup.\n\nValidates ``domain`` and ``release_id`` (400 ``validation_error`` on\nfailure), charges one call against the caller's monthly\n``backlinks`` quota (429 ``quota_exceeded`` on overflow), then runs\nthe same DuckDB query the internal route uses and returns the\nsliced results."
+        },
+        {
+          "info": {
+            "name": "Request Free Key",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://crawlgraph.com/api/v1/free-key",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Request a free-tier API key (15 backlink calls per month; gap\nanalysis requires the $99 lifetime tier). The key is emailed to the address you provide - it is never\nreturned in this response. One active key per email. Lifetime\ncustomers manage keys at /account instead."
+        },
+        {
+          "info": {
+            "name": "List available Common Crawl releases",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://crawlgraph.com/api/v1/releases"
+          },
+          "docs": "Return the list of releases the API can serve queries from.\n\nDoes NOT charge against the caller's quota."
+        },
+        {
+          "info": {
+            "name": "Submit an async gap-analysis job",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://crawlgraph.com/api/v1/gap-analysis",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Queue a gap-analysis job and return a poll URL.\n\nValidates the input domains, charges one call against the caller's\nmonthly ``gap`` quota (429 ``quota_exceeded`` on overflow), creates\na row in ``export_jobs`` (``kind=\"gap\"``), and schedules the worker\nvia FastAPI's ``BackgroundTasks``. The poll endpoint reads the same\ntable and is owner-scoped."
+        },
+        {
+          "info": {
+            "name": "Poll a gap-analysis job",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://crawlgraph.com/api/v1/gap-analysis/:job_id",
+            "params": [
+              {
+                "name": "job_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Return the current status of a gap-analysis job.\n\nOwner-scoped - jobs that don't exist or that belong to another user\nboth return ``404 not_found`` (``get_job_for_user`` enforces the\nownership check; we can't distinguish the two cases, which is the\npoint - never leak another user's job ids)."
+        },
+        {
+          "info": {
+            "name": "Compare inbound-link observations across indexed releases",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://crawlgraph.com/api/v1/changes",
+            "params": [
+              {
+                "name": "domain",
+                "value": "",
+                "type": "query",
+                "description": "Target domain to compare."
+              },
+              {
+                "name": "from",
+                "value": "",
+                "type": "query",
+                "description": "Older release id. Defaults to the older release in the newest queryable pair, or to an explicit 'to' release's nearest queryable ancestor."
+              },
+              {
+                "name": "to",
+                "value": "",
+                "type": "query",
+                "description": "Newer release id. Defaults to the newer release in the newest queryable pair."
+              }
+            ]
+          },
+          "docs": "Return observed additions, absences, and authority movement."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

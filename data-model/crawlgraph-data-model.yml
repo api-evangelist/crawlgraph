@@ -1,0 +1,184 @@
+generated: '2026-08-13'
+method: derived
+source: >-
+  Derived from the 20 components.schemas and their $ref links in
+  openapi/_original/crawlgraph-openapi.json (OpenAPI 3.1.0, fetched from
+  https://crawlgraph.com/api/v1/openapi.json), cross-checked against the field semantics
+  documented at https://crawlgraph.com/docs/api and the MCP outputSchemas in
+  mcp/crawlgraph-mcp-tools.json.
+docs: https://crawlgraph.com/docs/api
+notation: >-
+  Relationships use has_one / has_many / belongs_to with the referencing field name in `via`;
+  direction is from the entity that owns the reference field. CrawlGraph's model is a graph
+  projection, not a CRM: there are no user-owned mutable records except the async job. The
+  identity keys are plain domain names and Common Crawl release ids — there is no URN grammar
+  and no opaque resource id apart from the gap job.
+
+identifiers:
+  - name: domain
+    type: string
+    max_length: 253
+    description: >-
+      A strict registrable domain such as example.com. The universal key of the model — it
+      identifies both the subject of a query and every linking domain in a result. Schemes,
+      paths, bare TLDs and IP addresses are rejected with 400 validation_error.
+  - name: release_id
+    type: string
+    max_length: 64
+    description: >-
+      A Common Crawl release identifier. Two forms appear in published examples: the upstream
+      Common Crawl form (CC-MAIN-2026-04) and CrawlGraph's own composite form
+      (cc-main-2026-apr-may-jun), which merges several upstream crawls into one queryable index.
+    note: The composite form is the current shipping identifier; the site footer names cc-main-2026-apr-may-jun.
+  - name: job_id
+    type: string
+    prefix: gap_
+    description: Opaque owner-scoped id for an async gap-analysis job. Retained 7 days.
+
+entities:
+  - name: Domain
+    schema: null
+    domain: graph
+    description: >-
+      A node in the Common Crawl hyperlink graph. Not a retrievable resource in its own right —
+      it has no GET — but it is the entity every other schema is about. Carries two authority
+      metrics when it appears in the ranks file.
+    key: domain
+    attributes:
+      - {name: cg_authority, type: integer|null, range: 0-100, description: 'Log-rank percentile derived from Common Crawl harmonic centrality. Higher = more authoritative. Null when the domain is absent from the ranks file.'}
+      - {name: cg_rank, type: integer|null, description: 'Raw PageRank position across the whole graph (1 = top-ranked domain). Null when absent from the ranks file.'}
+
+  - name: Release
+    schema: V1ReleaseItem
+    domain: catalog
+    description: An indexed Common Crawl snapshot the API can serve queries from.
+    key: id
+    attributes:
+      - {name: id, type: string, description: Release identifier passed as release_id.}
+      - {name: label, type: string, description: 'Human label, e.g. "Apr 2026".'}
+      - {name: available, type: boolean, description: 'False when the release is known but its query artifact is not loaded — querying it returns 409 release_unavailable.'}
+
+  - name: BacklinkResult
+    schema: V1BacklinksResponse
+    domain: lookup
+    description: The referring-domain result set for one target domain at one release.
+    attributes: [domain, release_id, release_label, total_linking_domains, returned, cg_authority, cg_rank, results]
+    note: Carries the TARGET's own cg_authority/cg_rank alongside the list of linkers.
+
+  - name: BacklinkItem
+    schema: V1BacklinkItem
+    domain: lookup
+    description: One referring domain within a BacklinkResult.
+    attributes:
+      - {name: linking_domain, type: string}
+      - {name: num_hosts, type: integer, description: How many distinct hosts under that domain link to the target.}
+      - {name: tld, type: string}
+      - {name: cg_authority, type: integer|null}
+      - {name: cg_rank, type: integer|null}
+
+  - name: GapJob
+    schema: V1GapStatusResponse
+    domain: jobs
+    description: >-
+      An async competitor gap-analysis job. The only mutable, owner-scoped resource in the model.
+    key: job_id
+    lifecycle_states: [queued, running, completed, failed]
+    attributes: [job_id, status, progress_pct, started_at, completed_at, result, error]
+    retention: 7 days
+    ownership: >-
+      Owner-scoped. A job belonging to another user returns 404 not_found rather than 403, so ids
+      cannot be enumerated.
+
+  - name: GapResult
+    schema: V1GapResultBody
+    domain: jobs
+    description: The completed payload of a GapJob.
+    attributes: [my_domain, competitor_domains, gaps, total_gaps, truncated]
+
+  - name: Gap
+    schema: V1GapResultGap
+    domain: jobs
+    description: One domain that links to at least one competitor but not to my_domain.
+    attributes:
+      - {name: linking_domain, type: string}
+      - {name: found_on, type: array<string>, description: Which competitor domains this domain links to. The overlap count is the outreach qualifier.}
+    note: >-
+      Gaps carry no authority score. The docs are explicit that you must call the backlinks
+      lookup to score an individual target — which is exactly what the MCP gap_outreach_targets
+      tool automates via enrich_top.
+
+  - name: ChangeComparison
+    schema: V1ChangesAvailableResponse
+    alt_schema: V1ChangesUnavailableResponse
+    domain: changes
+    description: >-
+      A diff of inbound-link observations for one domain between two indexed releases. The
+      unavailable variant is a successful 200 with comparison_available false.
+    attributes: [domain, comparison_available, from_release, to_release, counts, added, removed, authority_moved, truncated, cap, snapshot_caveat]
+    cap: 100000 observed referring domains per snapshot
+
+  - name: ChangeCounts
+    schema: V1ChangesCounts
+    domain: changes
+    attributes: [from_snapshot, to_snapshot, added, removed, authority_moved]
+
+  - name: ObservedDomain
+    schema: V1ChangesObservedDomain
+    domain: changes
+    description: A domain appearing in the added[] or removed[] arrays of a ChangeComparison.
+    attributes: [linking_domain, num_hosts, cg_authority]
+
+  - name: AuthorityMovement
+    schema: V1ChangesAuthorityMovement
+    domain: changes
+    description: A domain whose authority score moved between the two compared releases.
+    attributes: [linking_domain, from_authority, to_authority, delta]
+
+  - name: FreeKeyRequest
+    schema: FreeKeyRequest
+    domain: account
+    description: A request for a free-tier API key, delivered by email.
+    attributes: [email, attribution]
+
+  - name: AttributionPayload
+    schema: AttributionPayload
+    domain: account
+    description: >-
+      Optional marketing-attribution envelope on a free-key request (utm_source, utm_medium,
+      utm_campaign, utm_content, utm_term, landing_path, referrer_host).
+    note: >-
+      Worth flagging: this is a marketing-analytics structure exposed in the PUBLIC API contract.
+      It is optional and nullable throughout, but it means the documented signup route carries
+      campaign tracking fields.
+
+relationships:
+  - {from: BacklinkResult, to: BacklinkItem, type: has_many, via: results}
+  - {from: BacklinkResult, to: Release, type: belongs_to, via: release_id}
+  - {from: BacklinkResult, to: Domain, type: belongs_to, via: domain}
+  - {from: BacklinkItem, to: Domain, type: belongs_to, via: linking_domain}
+  - {from: ReleasesResponse, to: Release, type: has_many, via: releases}
+  - {from: GapJob, to: GapResult, type: has_one, via: result}
+  - {from: GapResult, to: Gap, type: has_many, via: gaps}
+  - {from: GapResult, to: Domain, type: belongs_to, via: my_domain}
+  - {from: GapResult, to: Domain, type: has_many, via: competitor_domains}
+  - {from: Gap, to: Domain, type: belongs_to, via: linking_domain}
+  - {from: Gap, to: Domain, type: has_many, via: found_on}
+  - {from: ChangeComparison, to: Release, type: has_one, via: from_release}
+  - {from: ChangeComparison, to: Release, type: has_one, via: to_release}
+  - {from: ChangeComparison, to: ChangeCounts, type: has_one, via: counts}
+  - {from: ChangeComparison, to: ObservedDomain, type: has_many, via: added}
+  - {from: ChangeComparison, to: ObservedDomain, type: has_many, via: removed}
+  - {from: ChangeComparison, to: AuthorityMovement, type: has_many, via: authority_moved}
+  - {from: FreeKeyRequest, to: AttributionPayload, type: has_one, via: attribution}
+
+modelling_notes:
+  - >-
+    No rename layer: the docs state that response field names are the internal service's own
+    (linking_domain, num_hosts, tld). What you see in the payload is the storage schema.
+  - >-
+    The model is read-mostly. Of 11 data entities only GapJob has state, and it is the only
+    resource with a lifecycle.
+  - >-
+    Every observation is snapshot-scoped. ChangeComparison ships a `snapshot_caveat` string
+    inside the payload restating that absence from a newer snapshot does not prove a link was
+    removed — the epistemics of the data are part of the contract rather than a footnote.

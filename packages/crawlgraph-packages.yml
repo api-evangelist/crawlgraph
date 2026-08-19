@@ -1,0 +1,75 @@
+generated: '2026-08-13'
+method: searched
+source: https://registry.npmjs.org/crawlgraph-mcp
+also_from:
+  - https://github.com/pucilpet/crawlgraph-mcp
+  - https://crawlgraph.com/docs/api
+summary: >-
+  One first-party published package: the MCP server on npm. There is NO conventional client SDK
+  in any language. The docs teach the API with raw curl / Python requests / Node fetch snippets
+  instead, which is a deliberate posture for a six-operation API but means an integrator gets no
+  typed client. Registry probes for crawlgraph, crawlgraph-sdk, @crawlgraph/sdk (npm) and
+  crawlgraph (PyPI) all returned 404.
+package_count: 1
+official_package_count: 1
+sdk_count: 0
+
+packages:
+  - name: crawlgraph-mcp
+    registry: npm
+    url: https://www.npmjs.com/package/crawlgraph-mcp
+    repository: https://github.com/pucilpet/crawlgraph-mcp
+    language: TypeScript
+    kind: mcp-server
+    official: true
+    license: MIT
+    version: 0.1.0
+    published: '2026-05-31'
+    versions_published: 1
+    bin: crawlgraph-mcp
+    install: npx -y crawlgraph-mcp
+    runtime: node >=18
+    dependencies: ['@modelcontextprotocol/sdk ^1.0.4', 'express ^4.21.2', 'zod ^3.23.8']
+    description: >-
+      MCP server for the CrawlGraph backlink-intelligence API. Four tools: backlinks,
+      gap_analysis, gap_outreach_targets, releases.
+    currency_note: >-
+      CURRENCY GAP. npm has exactly one release, 0.1.0, published 2026-05-31 and never updated.
+      The GitHub repository's package.json at master declares version 0.2.2 and the repo was
+      last pushed 2026-07-03 — so the published artifact is at least two minor versions behind
+      the source, and more than two months stale. Anyone running `npx -y crawlgraph-mcp` today
+      gets 0.1.0, not what the repo describes. This is the local-stdio path only; the hosted
+      endpoint at https://crawlgraph.com/mcp is served from the provider's own deploy and is
+      unaffected.
+
+registry_probes:
+  - {registry: npm, package: crawlgraph-mcp, status: 200, found: true}
+  - {registry: npm, package: crawlgraph, status: 404, found: false}
+  - {registry: npm, package: crawlgraph-sdk, status: 404, found: false}
+  - {registry: npm, package: '@crawlgraph/sdk', status: 404, found: false}
+  - {registry: pypi, package: crawlgraph, status: 404, found: false}
+
+not_packaged:
+  - kind: sdk
+    note: >-
+      No first-party client SDK in any language. The API reference ships copy-paste curl, Python
+      (requests) and Node (fetch) snippets for every operation instead.
+  - kind: cli
+    note: >-
+      No installable CLI. The landing page renders a `crawl stripe.com --top 5` terminal
+      animation as marketing illustration; no such binary is published or documented.
+
+related_repositories:
+  - name: crawlgraph-datasets
+    url: https://github.com/pucilpet/crawlgraph-datasets
+    kind: data
+    license: CC-BY (stated on the site; no LICENSE file in the repo)
+    description: >-
+      Open datasets from the backlink-overlap studies (CSV + JSON, with a datapackage.json).
+      Data, not an interface — not a package.
+    pushed: '2026-07-06'
+
+distribution_channels:
+  - {channel: npm, url: 'https://www.npmjs.com/package/crawlgraph-mcp'}
+  - {channel: smithery, note: 'repo ships smithery.yaml with a stdio startCommand', url: 'https://github.com/pucilpet/crawlgraph-mcp/blob/master/smithery.yaml'}
+  - {channel: docker, note: 'repo ships a Dockerfile and DEPLOY.md; no published image located'}

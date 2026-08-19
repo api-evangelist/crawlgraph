@@ -1,0 +1,100 @@
+generated: '2026-08-13'
+method: derived
+source: >-
+  Derived by binding the live MCP tool list (probed anonymously at https://crawlgraph.com/mcp,
+  saved verbatim to mcp/crawlgraph-mcp-tools.json) to the operationIds in the live OpenAPI 3.1.0
+  spec (openapi/_original/crawlgraph-openapi.json, fetched from
+  https://crawlgraph.com/api/v1/openapi.json, 6 operations). Both surfaces were read directly,
+  so every binding below is high-confidence — no name-guessing was required.
+purpose: >-
+  Bind each MCP tool to the REST operation(s) that back it, so an agent can move between the two
+  surfaces. CrawlGraph's own docs state the relationship explicitly: "the MCP server is a thin
+  client over the endpoints documented below" — this file makes that machine-readable and shows
+  exactly where the two surfaces diverge.
+
+surfaces:
+  rest_openapi:
+    spec: openapi/crawlgraph-v1-openapi.yml
+    original: openapi/_original/crawlgraph-openapi.json
+    url: https://crawlgraph.com/api/v1/openapi.json
+    base: https://crawlgraph.com
+    gated: false
+    note: Spec itself is served anonymously (200); the operations it describes require a cg_live_ bearer key.
+  mcp:
+    url: https://crawlgraph.com/mcp
+    gated: false
+    note: tools/list answers anonymously with full input AND output schemas; tool CALLS require the bearer key.
+  graphql:
+    present: false
+  asyncapi:
+    present: false
+    note: Docs section 7 states "Webhooks are coming in a future version"; polling is the only async pattern today.
+
+crosswalk:
+  - tool: backlinks
+    category: lookup
+    rest: [v1_lookup_backlinks_api_v1_backlinks_post]
+    binding: rest
+    confidence: high
+    note: >-
+      1:1. MCP inputSchema (domain, limit, sort, release_id) matches the V1BacklinksBody schema
+      field-for-field, including limit max 10000 and sort enum [authority, hosts]. MCP outputSchema
+      matches V1BacklinksResponse.
+  - tool: gap_analysis
+    category: analysis
+    rest: [v1_gap_submit_api_v1_gap_analysis_post, v1_gap_poll_api_v1_gap_analysis__job_id__get]
+    binding: composite
+    confidence: high
+    note: >-
+      Composite. The REST surface is a two-step async job (POST returns 202 + poll_url; GET polls).
+      The MCP tool collapses both into one synchronous call — it submits and polls internally until
+      the job completes (docs: "usually 5-30s"). The tool therefore has NO job_id in its schema.
+  - tool: gap_outreach_targets
+    category: analysis
+    rest: [v1_gap_submit_api_v1_gap_analysis_post, v1_gap_poll_api_v1_gap_analysis__job_id__get, v1_lookup_backlinks_api_v1_backlinks_post]
+    binding: composite
+    confidence: high
+    note: >-
+      Composite and MCP-value-added. Runs the gap job, then applies ranking logic that exists ONLY
+      on the MCP surface: PRIORITY/SECONDARY tiering by competitor overlap, platform/CDN de-noising,
+      and authority enrichment of the top N targets via extra backlinks calls (enrich_top, default
+      10). A REST caller must reimplement this client-side; there is no single REST operation for it.
+  - tool: releases
+    category: metadata
+    rest: [v1_list_releases_api_v1_releases_get]
+    binding: rest
+    confidence: high
+    note: 1:1. Empty inputSchema matches the parameterless GET; outputSchema matches V1ReleasesResponse.
+
+mcp_only: []
+
+rest_only:
+  - operation: request_free_key_api_v1_free_key_post
+    path: POST /api/v1/free-key
+    reason: >-
+      Account provisioning, not data access. Requests a free-tier key that is emailed to the
+      caller. It is the one unauthenticated REST route, and it deliberately has no MCP tool —
+      an agent cannot bootstrap its own credential.
+  - operation: v1_changes_api_v1_changes_get
+    path: GET /api/v1/changes
+    reason: >-
+      Cross-release change comparison (added / removed / authority_moved referring domains between
+      two Common Crawl snapshots). Documented in the REST reference and present in the OpenAPI, but
+      NOT exposed as an MCP tool — the newest REST capability has not reached the agent surface.
+
+divergence:
+  summary: >-
+    The two surfaces are overlapping but neither is a superset. MCP adds composite orchestration
+    (auto-polling, outreach ranking, platform filtering) that REST callers must build themselves;
+    REST exposes two operations (free-key, changes) that no MCP tool reaches.
+  mcp_adds: [auto-poll of async gap jobs, priority/secondary tiering, platform-CDN filtering, authority enrichment of top targets]
+  rest_adds: [free-key self-service provisioning, cross-release change comparison]
+
+coverage:
+  mcp_tools: 4
+  mcp_tools_bound_to_rest: 4
+  mcp_only_tools: 0
+  rest_operations: 6
+  rest_operations_with_a_tool: 4
+  rest_only_operations: 2
+  binding_confidence: {high: 4, medium: 0, low: 0}

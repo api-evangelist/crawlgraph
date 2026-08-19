@@ -1,0 +1,85 @@
+generated: '2026-08-13'
+method: searched
+format: vendor-json
+source: https://crawlgraph.com/docs/api
+also_derived_from: openapi/_original/crawlgraph-openapi.json
+rfc9457: false
+note: >-
+  CrawlGraph publishes a complete, stable error catalog in section 5 of its API docs — a flat
+  envelope with a machine code, a human message, and a correlation id. That published catalog is
+  the authority here. The OpenAPI spec is materially THINNER than the docs: being FastAPI-
+  generated, it declares only 200/202 and a generic 422 HTTPValidationError on each operation and
+  does not describe 400, 401, 404, 409, 429 or 500 at all. An agent relying on the spec alone
+  would not know any of the real failure modes. Both views are recorded below.
+
+envelope:
+  media_type: application/json
+  shape: '{ "error": "<code>", "message": "<human readable>", "request_id": "req_a1b2c3d4" }'
+  fields:
+    - {name: error, type: string, required: true, description: Stable machine-readable error code.}
+    - {name: message, type: string, required: true, description: Human-readable explanation.}
+    - {name: request_id, type: string, required: true, description: 'Correlation id (req_ prefix); quote it on support tickets. Also echoed in the X-Request-ID response header.'}
+  applies_to: every non-2xx response
+
+problems:
+  - code: auth_missing
+    status: 401
+    title: Authorization header missing or malformed
+    remediation: 'Send Authorization: Bearer cg_live_<your-key>.'
+    consumes_quota: false
+  - code: auth_invalid
+    status: 401
+    title: Key unknown, revoked, or owner refunded
+    remediation: Check the key has not been revoked; create a new one at https://crawlgraph.com/account.
+    consumes_quota: false
+  - code: validation_error
+    status: 400
+    title: Request body or query failed validation
+    remediation: >-
+      Correct the offending field. Triggers include a malformed domain, an unknown release_id, an
+      out-of-range limit (max 10000), and — on /changes — equal from/to ids.
+    consumes_quota: false
+  - code: not_found
+    status: 404
+    title: Resource doesn't exist or isn't yours
+    remediation: >-
+      Check the job id. Deliberately ambiguous: gap jobs owned by another user return 404 rather
+      than 403, so job ids cannot be enumerated.
+    consumes_quota: false
+  - code: release_unavailable
+    status: 409
+    title: The release id is known, but its query artifact is not available
+    remediation: 'Call GET /api/v1/releases and pick a release with available: true.'
+    consumes_quota: false
+    note: Checked before quota or DuckDB work, so it is free.
+  - code: quota_exceeded
+    status: 429
+    title: Monthly quota hit
+    remediation: Read Retry-After (seconds until the quota resets) and retry after the UTC month rollover.
+    consumes_quota: false
+    headers: [Retry-After, X-RateLimit-Reset]
+  - code: internal_error
+    status: 500
+    title: Server bug
+    remediation: Quote the request_id to support.
+    consumes_quota: false
+
+quota_accounting:
+  note: >-
+    Only successful (2xx) calls count against quota. Validation errors, auth failures and quota
+    rejections are free. Failed gap jobs do NOT refund quota in v1.
+
+spec_declared_errors:
+  note: What the machine-readable OpenAPI actually declares, for contrast with the docs above.
+  format: fastapi-json
+  statuses: [422]
+  schema: HTTPValidationError
+  shape: '{ "detail": [ { "loc": [...], "msg": string, "type": string } ] }'
+  gap: >-
+    422 appears on 5 of 6 operations in the spec but is NOT in the published docs catalog, and the
+    7 documented error codes are absent from the spec. This is the single largest contract-quality
+    gap in CrawlGraph's API surface.
+
+x-evidence:
+  - {url: 'https://crawlgraph.com/docs/api', status: 200}
+  - {url: 'https://crawlgraph.com/api/v1/openapi.json', status: 200}

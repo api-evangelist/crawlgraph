@@ -1,0 +1,429 @@
+{
+  "tools": [
+    {
+      "name": "backlinks",
+      "title": "Backlink lookup",
+      "description": "Look up referring domains (backlinks) for a single target domain from the Common Crawl webgraph. Returns each linking domain with host count and CrawlGraph authority score, plus the target's own authority/rank. Costs one backlinks call against the monthly quota (1,000/mo on lifetime).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "domain": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253,
+            "description": "Target domain, e.g. 'stripe.com'."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000,
+            "description": "Max rows (1..10000, default 1000)."
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "authority",
+              "hosts"
+            ],
+            "description": "'authority' (default) or 'hosts'."
+          },
+          "release_id": {
+            "type": "string",
+            "description": "Common Crawl release id (defaults to latest; see the releases tool)."
+          }
+        },
+        "required": [
+          "domain"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Backlink lookup",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "domain": {
+            "type": "string"
+          },
+          "release_id": {
+            "type": "string"
+          },
+          "release_label": {
+            "type": "string"
+          },
+          "total_linking_domains": {
+            "type": "number"
+          },
+          "returned": {
+            "type": "number"
+          },
+          "cg_authority": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "cg_rank": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "linking_domain": {
+                  "type": "string"
+                },
+                "num_hosts": {
+                  "type": "number"
+                },
+                "tld": {
+                  "type": "string"
+                },
+                "cg_authority": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "cg_rank": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "linking_domain",
+                "num_hosts",
+                "cg_authority",
+                "cg_rank"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "domain",
+          "release_id",
+          "release_label",
+          "total_linking_domains",
+          "returned",
+          "cg_authority",
+          "cg_rank",
+          "results"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "gap_analysis",
+      "title": "Competitor backlink gap analysis",
+      "description": "Run a competitor backlink gap analysis: find domains that link to one or more of your competitors but NOT to you. Submits an async job and polls until done (usually 5-30s). Returns every gap with `found_on` listing which competitors each domain links to. Costs one gap job against the monthly quota (50/mo on lifetime).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "my_domain": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253,
+            "description": "Your domain."
+          },
+          "competitor_domains": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 253
+            },
+            "minItems": 1,
+            "maxItems": 5,
+            "description": "1 to 5 competitor domains."
+          }
+        },
+        "required": [
+          "my_domain",
+          "competitor_domains"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Competitor backlink gap analysis",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "my_domain": {
+            "type": "string"
+          },
+          "competitor_domains": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "total_gaps": {
+            "type": "number"
+          },
+          "gaps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "linking_domain": {
+                  "type": "string"
+                },
+                "found_on": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "linking_domain",
+                "found_on"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "my_domain",
+          "competitor_domains",
+          "total_gaps",
+          "gaps"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "gap_outreach_targets",
+      "title": "Outreach target finder",
+      "description": "The warm-outreach play. Runs a gap analysis, then ranks results: PRIORITY = domains linking to ALL your competitors but not you (publishers who cover your whole space and have never heard of you), SECONDARY = domains linking to 2+ competitors. Platform/CDN noise is filtered, top N priority targets are scored by authority. Use 2-3 competitors. Costs one gap job + one backlinks call per enriched target.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "my_domain": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253,
+            "description": "Your domain."
+          },
+          "competitor_domains": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 253
+            },
+            "minItems": 2,
+            "maxItems": 5,
+            "description": "2 to 5 competitor domains (2-3 recommended)."
+          },
+          "include_platforms": {
+            "type": "boolean",
+            "description": "Keep platform/CDN/social domains in the list. Default false."
+          },
+          "enrich_top": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 25,
+            "description": "Authority-score the top N priority targets. Default 10; each costs one backlinks call. 0 disables."
+          }
+        },
+        "required": [
+          "my_domain",
+          "competitor_domains"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "title": "Outreach target finder",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "my_domain": {
+            "type": "string"
+          },
+          "competitor_domains": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "priority_targets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "linking_domain": {
+                  "type": "string"
+                },
+                "found_on": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "overlap": {
+                  "type": "number"
+                },
+                "cg_authority": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "cg_rank": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "linking_domain",
+                "found_on",
+                "overlap"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "secondary_targets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "linking_domain": {
+                  "$ref": "#/properties/priority_targets/items/properties/linking_domain"
+                },
+                "found_on": {
+                  "$ref": "#/properties/priority_targets/items/properties/found_on"
+                },
+                "overlap": {
+                  "$ref": "#/properties/priority_targets/items/properties/overlap"
+                },
+                "cg_authority": {
+                  "$ref": "#/properties/priority_targets/items/properties/cg_authority"
+                },
+                "cg_rank": {
+                  "$ref": "#/properties/priority_targets/items/properties/cg_rank"
+                }
+              },
+              "required": [
+                "linking_domain",
+                "found_on",
+                "overlap"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "total_gaps": {
+            "type": "number"
+          },
+          "platforms_filtered": {
+            "type": "number"
+          },
+          "authority_enriched": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "my_domain",
+          "competitor_domains",
+          "priority_targets",
+          "secondary_targets",
+          "total_gaps",
+          "platforms_filtered",
+          "authority_enriched"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "releases",
+      "title": "List Common Crawl releases",
+      "description": "List the Common Crawl releases the API can query. Does not count against any quota. Use a release `id` with the backlinks tool to query a specific snapshot.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "annotations": {
+        "title": "List Common Crawl releases",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "releases": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "available": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "label",
+                "available"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "releases"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    }
+  ]
+}

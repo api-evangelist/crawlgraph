@@ -1,0 +1,135 @@
+generated: '2026-08-13'
+method: probed
+status: published
+source: https://crawlgraph.com/mcp
+docs: https://crawlgraph.com/docs/api
+note: >-
+  CrawlGraph ships BOTH a hosted remote MCP endpoint and a local stdio npm package. The hosted
+  endpoint is documented in section 3 ("MCP server") of https://crawlgraph.com/docs/api and was
+  probed live: POST https://crawlgraph.com/mcp with method tools/list returned HTTP 200 and the
+  full tool list ANONYMOUSLY, including complete JSON Schema inputSchema AND outputSchema for
+  every tool. Tool DISCOVERY is open; tool INVOCATION requires the same cg_live_ bearer key as the
+  REST API. The verbatim tools/list result is saved at mcp/crawlgraph-mcp-tools.json.
+  This corrects the July 2026 profile note, which recorded "there is NO hosted/remote MCP endpoint".
+
+deployment:
+  mode: both
+  endpoint: https://crawlgraph.com/mcp
+  install: npx -y crawlgraph-mcp
+  package: https://www.npmjs.com/package/crawlgraph-mcp
+  auth: api-key
+  verified: probed
+
+transport:
+  remote:
+    protocol: streamable-http
+    url: https://crawlgraph.com/mcp
+    methods_observed:
+      - {method: 'tools/list', http_status: 200, authenticated: false}
+      - {method: initialize, http_status: 200, authenticated: false}
+      - {method: 'GET /mcp', http_status: 405, note: 'Endpoint rejects browser-style GET; expects MCP Streamable HTTP POST.'}
+    required_accept_header: application/json, text/event-stream
+    documented_client_errors:
+      - {status: 401, meaning: bearer key missing, invalid, or revoked}
+      - {status: 405, meaning: client sent a browser-style GET instead of an MCP POST}
+      - {status: 406, meaning: client omitted the MCP Accept header}
+  local_stdio:
+    command: npx
+    args: [-y, crawlgraph-mcp]
+    env:
+      CRAWLGRAPH_API_KEY: cg_live_<your-key>
+      CRAWLGRAPH_BASE_URL: https://crawlgraph.com  # optional override
+    package: crawlgraph-mcp
+    registry: npm
+    repository: https://github.com/pucilpet/crawlgraph-mcp
+    license: MIT
+    smithery: true  # repo ships a smithery.yaml (stdio startCommand)
+
+auth:
+  methods: [api-key]
+  scheme: bearer
+  key_prefix: cg_live_
+  env: CRAWLGRAPH_API_KEY
+  oauth: false
+  note: >-
+    No OAuth. /.well-known/oauth-authorization-server and /.well-known/oauth-protected-resource
+    both return 404 on crawlgraph.com. The MCP server is a thin client over the REST API and
+    shares its bearer keys and monthly quotas.
+
+client_setup_documented:
+  - client: Codex CLI
+    command: codex mcp add crawlgraph --url https://crawlgraph.com/mcp --bearer-token-env-var CRAWLGRAPH_API_KEY
+  - client: Claude Code
+    command: "claude mcp add --scope local --transport http crawlgraph https://crawlgraph.com/mcp --header='Authorization: Bearer cg_live_<your-key>'"
+  - client: Claude Desktop / Cursor / Windsurf / Cline / Zed
+    command: npx -y crawlgraph-mcp
+    note: local stdio fallback for clients without remote-server support
+
+tool_count: 4
+tools:
+  - name: backlinks
+    title: Backlink lookup
+    category: lookup
+    description: >-
+      Look up referring domains (backlinks) for a single target domain from the Common Crawl
+      webgraph. Returns each linking domain with host count and CrawlGraph authority score, plus
+      the target's own authority/rank.
+    required: [domain]
+    inputs: [domain, limit, sort, release_id]
+    output_schema: true
+    annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true}
+    quota_cost: 1 backlinks call
+    tiers: [free, lifetime]
+  - name: gap_analysis
+    title: Competitor backlink gap analysis
+    category: analysis
+    description: >-
+      Find domains that link to one or more of your competitors but NOT to you. Submits an async
+      job and polls until done (usually 5-30s); returns every gap with `found_on`.
+    required: [my_domain, competitor_domains]
+    inputs: [my_domain, competitor_domains]
+    output_schema: true
+    annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true}
+    quota_cost: 1 gap job
+    tiers: [lifetime]
+  - name: gap_outreach_targets
+    title: Outreach target finder
+    category: analysis
+    description: >-
+      Runs a gap analysis, then ranks results: PRIORITY = domains linking to ALL competitors but
+      not you; SECONDARY = domains linking to 2+ competitors. Platform/CDN noise is filtered and
+      the top N priority targets are authority-scored.
+    required: [my_domain, competitor_domains]
+    inputs: [my_domain, competitor_domains, include_platforms, enrich_top]
+    output_schema: true
+    annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true}
+    quota_cost: 1 gap job + 1 backlinks call per enriched target
+    tiers: [lifetime]
+  - name: releases
+    title: List Common Crawl releases
+    category: metadata
+    description: List the Common Crawl releases the API can query. Does not count against any quota.
+    required: []
+    inputs: []
+    output_schema: true
+    annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true}
+    quota_cost: free
+    tiers: [free, lifetime]
+
+schema_quality:
+  input_schemas_published: 4
+  output_schemas_published: 4
+  annotations_published: 4
+  note: >-
+    All four tools publish a draft-07 inputSchema AND an outputSchema with additionalProperties
+    false, plus behavioural annotations (readOnly/idempotent/openWorld). This is materially
+    stronger than the catalog norm, where outputSchema is usually absent.
+
+x-evidence:
+  fetched: '2026-08-13'
+  url: https://crawlgraph.com/mcp
+  method: POST tools/list (jsonrpc 2.0)
+  http_status: 200
+  content_type: application/json
+  anonymous: true
+  raw: mcp/crawlgraph-mcp-tools.json

@@ -1,0 +1,128 @@
+generated: '2026-08-13'
+method: searched
+source: https://crawlgraph.com/docs/api
+also_derived_from: openapi/crawlgraph-v1-openapi.yml
+summary: >-
+  Cross-cutting request/response semantics for the CrawlGraph REST API v1 and the hosted MCP
+  server, captured from the published docs and the live OpenAPI. JSON in, JSON out, bearer auth,
+  a flat error envelope with a request id, and explicit per-tier rate-limit headers on every 2xx.
+  Idempotency keys are NOT supported and pagination does not exist — both are honest absences,
+  recorded here so an agent does not assume otherwise.
+
+authentication:
+  style: bearer_token
+  header: Authorization
+  key_prefix: cg_live_
+  see: authentication/crawlgraph-authentication.yml
+
+content_negotiation:
+  request: application/json
+  response: application/json
+  note: JSON only. No XML, no form encoding, no content negotiation.
+
+idempotency:
+  documented: false
+  header: null
+  note: >-
+    No Idempotency-Key mechanism is documented. It matters less than usual here because the API is
+    effectively read-only: 4 of 6 operations are safe lookups, and the MCP tools all carry
+    idempotentHint true / readOnlyHint true annotations. The two state-changing routes are
+    POST /api/v1/free-key (guarded instead by "one active key per email") and
+    POST /api/v1/gap-analysis (a resubmission spends another gap job — there is no dedupe).
+  safe_to_retry:
+    - POST /api/v1/backlinks
+    - GET /api/v1/releases
+    - GET /api/v1/gap-analysis/{job_id}
+    - GET /api/v1/changes
+  not_safe_to_retry:
+    - POST /api/v1/gap-analysis
+    - POST /api/v1/free-key
+
+pagination:
+  supported: false
+  style: none
+  note: >-
+    No cursor, page or offset parameter exists on any operation. Result-set size is controlled by
+    the `limit` request field on /backlinks (default 1000, max 10000) and the response carries
+    `total_linking_domains` alongside `returned` so the caller can see truncation. The docs are
+    explicit that this is deliberate: "The API is for programmatic use, not bulk export - use the
+    dashboard for full datasets." /changes caps each snapshot at 100,000 observed domains and
+    signals overflow with a boolean `truncated` plus `cap`.
+  truncation_signals: [total_linking_domains, returned, truncated, cap]
+
+sorting:
+  supported: true
+  parameter: sort
+  values: [authority, hosts]
+  default: authority
+  note: 'authority = cg_authority DESC then num_hosts DESC; hosts = legacy num_hosts DESC.'
+
+field_selection:
+  supported: false
+  note: >-
+    No sparse-fieldsets or expansion mechanism. Response field names are the internal service's
+    own — the docs state plainly "Field names match the internal service: linking_domain,
+    num_hosts, tld. No rename layer."
+
+async_pattern:
+  style: submit-and-poll
+  submit: POST /api/v1/gap-analysis
+  submit_status: 202
+  poll: GET /api/v1/gap-analysis/{job_id}
+  poll_url_returned: true
+  states: [queued, running, completed, failed]
+  progress_field: progress_pct
+  retention: 7 days
+  callbacks: false
+  note: >-
+    Polling is the only async pattern. Docs section 7: "Webhooks are coming in a future version."
+    The MCP gap_analysis tool hides the poll loop and returns the completed result directly.
+
+request_tracing:
+  header: X-Request-ID
+  in_body: request_id
+  body_field_prefix: req_
+  note: Present on error bodies and returned as a response header; quote it on support tickets.
+
+rate_limit_signalling:
+  headers:
+    - X-RateLimit-Limit-Backlinks
+    - X-RateLimit-Remaining-Backlinks
+    - X-RateLimit-Limit-Gap
+    - X-RateLimit-Remaining-Gap
+    - X-RateLimit-Reset
+    - Retry-After
+  exhaustion_status: 429
+  present_on: every 2xx response and all 429s
+  see: rate-limits/crawlgraph-rate-limits.yml
+
+versioning:
+  scheme: uri-path
+  current: v1
+  path_prefix: /api/v1
+  policy: >-
+    Breaking changes land on /api/v2 with a deprecation window; v1 integrations "won't break
+    overnight". No dated Sunset/Deprecation header mechanism (RFC 8594) is documented.
+  see: lifecycle/crawlgraph-lifecycle.yml
+
+error_envelope:
+  media_type: application/json
+  rfc9457: false
+  shape: '{ "error": "<code>", "message": "<human readable>", "request_id": "req_..." }'
+  see: errors/crawlgraph-problem-types.yml
+
+data_freshness:
+  cadence: quarterly Common Crawl release
+  current_release: cc-main-2026-apr-may-jun
+  caveat: >-
+    Every response describes a periodic snapshot, not live monitoring. The /changes response
+    carries an explicit `snapshot_caveat` string restating that absence from a newer snapshot
+    does not prove a link was removed — a notable piece of honesty to ship inside the payload.
+  cache: per-domain results cached 30 days (SQLite), queried from DuckDB over Common Crawl files
+
+cross_links:
+  authentication: authentication/crawlgraph-authentication.yml
+  errors: errors/crawlgraph-problem-types.yml
+  rate_limits: rate-limits/crawlgraph-rate-limits.yml
+  lifecycle: lifecycle/crawlgraph-lifecycle.yml
+  data_model: data-model/crawlgraph-data-model.yml
