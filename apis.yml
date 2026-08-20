@@ -30,6 +30,16 @@ specificationVersion: '0.23'
 tags:
   - SEO
   - backlink-intelligence
+  - MarTech
+  - Competitive Intelligence
+  - Web Data
+  - Common-Crawl
+  - link-building
+  - Developer Tools
+  - MCP
+tags_raw:
+  - SEO
+  - backlink-intelligence
   - martech
   - competitive-intelligence
   - web-data
@@ -50,6 +60,15 @@ apis:
     humanURL: https://crawlgraph.com/docs/api
     baseURL: https://crawlgraph.com/api/v1/
     tags:
+      - SEO
+      - backlink-intelligence
+      - MarTech
+      - Competitive Intelligence
+      - Web Data
+      - Common-Crawl
+      - link-building
+      - Developer Tools
+    tags_raw:
       - SEO
       - backlink-intelligence
       - martech
@@ -92,6 +111,12 @@ apis:
     humanURL: https://crawlgraph.com/docs/api
     baseURL: https://crawlgraph.com/mcp
     tags:
+      - MCP
+      - Agents
+      - SEO
+      - backlink-intelligence
+      - Developer Tools
+    tags_raw:
       - MCP
       - agents
       - SEO
