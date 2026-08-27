@@ -49,88 +49,66 @@ tags_raw:
   - API
   - MCP
 apis:
-  - name: CrawlGraph REST API v1
-    description: >-
-      JSON REST API for backlink/referring-domain lookups with authority scoring, indexed Common Crawl release
-      listing, async competitor gap analysis, and cross-release change comparison. Six operations under
-      /api/v1, described by a live OpenAPI 3.1.0 contract served anonymously at
-      https://crawlgraph.com/api/v1/openapi.json. Bearer auth with cg_live_ keys. A free self-serve tier
-      (15 backlink calls/month, emailed key, no card) is available; gap analysis and the 1,000-call allowance
-      require the $99 lifetime tier.
-    humanURL: https://crawlgraph.com/docs/api
-    baseURL: https://crawlgraph.com/api/v1/
-    tags:
-      - SEO
-      - backlink-intelligence
-      - MarTech
-      - Competitive Intelligence
-      - Web Data
-      - Common-Crawl
-      - link-building
-      - Developer Tools
-    tags_raw:
-      - SEO
-      - backlink-intelligence
-      - martech
-      - competitive-intelligence
-      - web-data
-      - Common-Crawl
-      - link-building
-      - developer-tools
-      - API
-    properties:
-      - type: Documentation
-        url: https://crawlgraph.com/docs/api
-      - type: APIReference
-        url: https://crawlgraph.com/docs/api
-      - type: OpenAPI
-        url: openapi/crawlgraph-v1-openapi.yml
-      - type: Overlay
-        url: overlays/crawlgraph-v1-overlay.yaml
-      - type: Authentication
-        url: authentication/crawlgraph-authentication.yml
-      - type: Conventions
-        url: conventions/crawlgraph-conventions.yml
-      - type: ErrorCatalog
-        url: errors/crawlgraph-problem-types.yml
-      - type: DataModel
-        url: data-model/crawlgraph-data-model.yml
-      - type: RateLimits
-        url: rate-limits/crawlgraph-rate-limits.yml
-      - type: LLMSTxt
-        url: https://crawlgraph.com/llms.txt
-  - name: CrawlGraph MCP Server
-    description: >-
-      Hosted remote Model Context Protocol server at https://crawlgraph.com/mcp over Streamable HTTP, plus an
-      open-source local stdio fallback published to npm as crawlgraph-mcp (MIT). Four tools — backlinks,
-      gap_analysis, gap_outreach_targets, releases — each publishing a JSON Schema inputSchema AND outputSchema
-      with behavioural annotations. tools/list answers anonymously; tool invocation uses the same cg_live_ bearer
-      key and the same monthly quotas as the REST API. The gap_outreach_targets tool is MCP-value-added: it
-      orchestrates the async gap job, tiers results by competitor overlap, filters platform/CDN noise, and
-      authority-scores the top targets.
-    humanURL: https://crawlgraph.com/docs/api
-    baseURL: https://crawlgraph.com/mcp
-    tags:
-      - MCP
-      - Agents
-      - SEO
-      - backlink-intelligence
-      - Developer Tools
-    tags_raw:
-      - MCP
-      - agents
-      - SEO
-      - backlink-intelligence
-      - developer-tools
-    properties:
-      - type: MCPServer
-        url: mcp/crawlgraph-mcp.yml
-      - type: ToolCrosswalk
-        url: mcp/crawlgraph-tool-crosswalk.yml
-      - type: Documentation
-        url: https://crawlgraph.com/docs/api
-      - type: SourceCode
-        url: https://github.com/pucilpet/crawlgraph-mcp
+- name: CrawlGraph MCP Server
+  description: >-
+    Hosted remote Model Context Protocol server at https://crawlgraph.com/mcp over Streamable HTTP, plus
+    an open-source local stdio fallback published to npm as crawlgraph-mcp (MIT). Four tools — backlinks,
+    gap_analysis, gap_outreach_targets, releases — each publishing a JSON Schema inputSchema AND outputSchema
+    with behavioural annotations. tools/list answers anonymously; tool invocation uses the same cg_live_
+    bearer key and the same monthly quotas as the REST API. The gap_outreach_targets tool is MCP-value-added:
+    it orchestrates the async gap job, tiers results by competitor overlap, filters platform/CDN noise,
+    and authority-scores the top targets.
+  humanURL: https://crawlgraph.com/docs/api
+  baseURL: https://crawlgraph.com/mcp
+  tags:
+  - MCP
+  - Agents
+  - SEO
+  - backlink-intelligence
+  - Developer Tools
+  tags_raw:
+  - MCP
+  - agents
+  - SEO
+  - backlink-intelligence
+  - developer-tools
+  properties:
+  - type: MCPServer
+    url: mcp/crawlgraph-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/crawlgraph-tool-crosswalk.yml
+  - type: Documentation
+    url: https://crawlgraph.com/docs/api
+  - type: SourceCode
+    url: https://github.com/pucilpet/crawlgraph-mcp
+- aid: crawlgraph:crawlgraph-v1-api
+  name: CrawlGraph V1 API
+  description: >-
+    CrawlGraph public REST API v1 — backlink lookups, Common Crawl release discovery, async gap analysis,
+    and cross-release change comparison.
+  humanURL: https://crawlgraph.com/docs/api
+  baseURL: https://crawlgraph.com/api/v1/
+  tags:
+  - v1
+  properties:
+  - type: OpenAPI
+    url: openapi/crawlgraph-v1-api-openapi.yml
+  - type: Documentation
+    url: https://crawlgraph.com/docs/api
+  - type: APIReference
+    url: https://crawlgraph.com/docs/api
+  - type: Authentication
+    url: authentication/crawlgraph-authentication.yml
+  - type: Conventions
+    url: conventions/crawlgraph-conventions.yml
+  - type: ErrorCatalog
+    url: errors/crawlgraph-problem-types.yml
+  - type: DataModel
+    url: data-model/crawlgraph-data-model.yml
+  - type: RateLimits
+    url: rate-limits/crawlgraph-rate-limits.yml
+  - type: LLMSTxt
+    url: https://crawlgraph.com/llms.txt
 maintainers:
   - FN: Petteri Pucilowski (pucilpet)
     email: petteri@searchenginewizards.fi
