@@ -43,7 +43,7 @@ specificationVersion: '0.23'
 tags:
   - SEO
   - backlink-intelligence
-  - martech
+  - MarTech
   - Competitive Intelligence
   - Web Data
   - Common-Crawl
@@ -133,6 +133,9 @@ generated:
   confidence: 85
   at: '2026-07-03T11:50:54.356Z'
 common:
+- type: License
+  name: MIT
+  url: https://github.com/pucilpet/crawlgraph-mcp/blob/master/LICENSE
 - type: DeveloperPortal
   url: https://crawlgraph.com/docs/api
 - type: Documentation
