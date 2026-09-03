@@ -1,4 +1,4 @@
-generated: '2026-08-13'
+generated: '2026-09-02'
 method: searched
 source: https://crawlgraph.com/docs/api
 docs: https://crawlgraph.com/docs/api
@@ -81,5 +81,13 @@ response_size_caps:
   - {endpoint: POST /api/v1/backlinks, field: limit, default: 1000, max: 10000}
   - {endpoint: GET /api/v1/changes, cap: 100000, signal: 'truncated: true'}
 
+x-rechecked:
+  date: '2026-09-02'
+  note: >-
+    Section 4 re-read in full. Every quota, window, header name and exhaustion code below is
+    unchanged from the 2026-08-13 capture — 15/1,000 backlink calls, 50 gap jobs, unmetered
+    releases, ~60 req/min per-IP burst, the seven response headers, 429 quota_exceeded with
+    Retry-After. Still documented but still not declared in the OpenAPI.
+
 x-evidence:
-  - {url: 'https://crawlgraph.com/docs/api', status: 200, note: 'section 4 "Quotas & rate limits"'}
+  - {url: 'https://crawlgraph.com/docs/api', status: 200, note: 'section 4 "Quotas & rate limits"', checked: '2026-09-02'}

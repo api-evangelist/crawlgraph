@@ -1,17 +1,20 @@
-generated: '2026-08-13'
+generated: '2026-09-02'
 method: searched
 source: https://crawlgraph.com/docs/api
 note: >-
   Versioning policy is stated in prose; everything operational around it is absent. Probes
-  confirmed there is no status page and no changelog page — /status and /changelog both return
-  HTTP 200 but are SOFT-404s rendering the app's "isn't a valid domain name" fallback, so neither
-  may be credited as a published surface.
+  confirmed there is no status page and no changelog page. Re-probed 2026-09-02, and the FAILURE
+  MODE HAS CHANGED SHAPE without changing substance: /status and /changelog now answer HTTP 308 and
+  redirect to /backlinks/status and /backlinks/changelog, which return HTTP 200 rendering the
+  domain-report route's "isn't a valid domain name" fallback. It is the same soft-404, reached one
+  redirect later. A probe that stops at the 308, or that credits the final 200 without reading the
+  body, will now record two pages this provider does not publish.
 
 versioning:
   scheme: uri-path
   current_version: v1
   path_prefix: /api/v1
-  spec_version: 1.2.0        # info.version in the live OpenAPI
+  spec_version: 1.2.2        # info.version in the live OpenAPI, re-harvested 2026-09-02 (was 1.2.0)
   policy_documented: true
   policy: >-
     "The current API is at v1. Breaking changes will land on /api/v2 with a deprecation window -
@@ -37,7 +40,8 @@ changelog:
   published: false
   url: null
   probed:
-    - {url: 'https://crawlgraph.com/changelog', status: 200, result: soft-404}
+    - {url: 'https://crawlgraph.com/changelog', status: 308, redirects_to: /backlinks/changelog, final_status: 200, result: soft-404, checked: '2026-09-02'}
+    - {url: 'https://crawlgraph.com/changelog', status: 200, result: soft-404, checked: '2026-08-13'}
   note: >-
     Docs section 7 says "Check back here for changelogs" — an intent, not a changelog. No dated
     API changelog exists at the time of probing. The product blog at https://crawlgraph.com/blog
@@ -48,7 +52,8 @@ status_page:
   published: false
   url: null
   probed:
-    - {url: 'https://crawlgraph.com/status', status: 200, result: soft-404}
+    - {url: 'https://crawlgraph.com/status', status: 308, redirects_to: /backlinks/status, final_status: 200, result: soft-404, checked: '2026-09-02'}
+    - {url: 'https://crawlgraph.com/status', status: 200, result: soft-404, checked: '2026-08-13'}
   note: >-
     No status page and no third-party statuspage (no status.crawlgraph.com). Operational state is
     not observable to an integrator.
@@ -71,10 +76,13 @@ data_lifecycle:
   log_retention: 30 days (server logs, per privacy policy)
 
 roadmap_signals:
-  - {item: Webhooks, status: announced, source: 'https://crawlgraph.com/docs/api section 7', quote: 'Webhooks are coming in a future version.'}
+  - {item: Webhooks, status: announced, source: 'https://crawlgraph.com/docs/api section 7', quote: 'Webhooks are coming in a future version.', still_unshipped_as_of: '2026-09-02'}
+  - {item: backlink_changes MCP tool, status: documented-not-shipped, source: 'https://crawlgraph.com/docs/api section 3', note: 'Named in the docs as one of five tools; absent from the hosted tools/list and from the published package. See mcp/crawlgraph-tool-crosswalk.yml.'}
 
 x-evidence:
-  - {url: 'https://crawlgraph.com/docs/api', status: 200}
-  - {url: 'https://crawlgraph.com/status', status: 200, note: soft-404}
-  - {url: 'https://crawlgraph.com/changelog', status: 200, note: soft-404}
-  - {url: 'https://crawlgraph.com/terms', status: 200}
+  - {url: 'https://crawlgraph.com/docs/api', status: 200, checked: '2026-09-02'}
+  - {url: 'https://crawlgraph.com/status', status: 308, note: 'redirects to /backlinks/status -> 200 soft-404', checked: '2026-09-02'}
+  - {url: 'https://crawlgraph.com/changelog', status: 308, note: 'redirects to /backlinks/changelog -> 200 soft-404', checked: '2026-09-02'}
+  - {url: 'https://crawlgraph.com/roadmap', status: 308, note: 'redirects to /backlinks/roadmap -> 200 soft-404; no roadmap published', checked: '2026-09-02'}
+  - {url: 'https://crawlgraph.com/terms', status: 200, checked: '2026-09-02'}
+  - {url: 'https://crawlgraph.com/api/v1/openapi.json', status: 200, note: 'info.version 1.2.2', checked: '2026-09-02'}

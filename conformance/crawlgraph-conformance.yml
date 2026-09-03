@@ -1,4 +1,4 @@
-generated: '2026-08-13'
+generated: '2026-09-02'
 method: searched
 source: >-
   Live probes of https://crawlgraph.com (OpenAPI, MCP, /.well-known/) plus the published API
@@ -90,6 +90,34 @@ standards:
       No cursor/page/offset parameter on any operation. Result size is bounded by `limit`
       (max 10000) with explicit truncation counters instead.
 
+domain_standard:
+  applicable: false
+  market: SEO / backlink intelligence / web-graph analytics
+  standard: null
+  conforms: null
+  scored: reward-only — no penalty applies
+  searched_for:
+    - {standard: 'SCIM (urn:ietf:params:scim:schemas:*)', found: false, note: no identity-provisioning surface}
+    - {standard: OData $metadata, found: false, note: 'no $metadata endpoint; probed /api/v1 paths return not_found'}
+    - {standard: OpenRTB, found: false, note: not an ad-tech bidding surface}
+    - {standard: 'OAI-PMH', found: false, note: 'not a repository/metadata-harvest surface, despite the dataset publishing'}
+    - {standard: 'schema.org / Dataset + DCAT', found: partial, note: 'the open datasets repo ships a datapackage.json (Frictionless Data Package) for the study CSV/JSON, but that covers the downloadable study data, not the API contract'}
+    - {standard: 'Common Crawl columnar/webgraph formats', found: n/a, note: 'Common Crawl publishes file formats for its vertices/edges dumps, not an API interoperability standard a provider can conform to'}
+  finding: >-
+    There is no interoperability standard for backlink or web-graph APIs. Ahrefs, Moz, Semrush and
+    Majestic each ship a proprietary contract with proprietary authority metrics, and CrawlGraph is
+    explicit that it does the same — the docs state "Field names match the internal service:
+    linking_domain, num_hosts, tld. No rename layer." A buyer moving between any two vendors in this
+    market writes a bespoke connector regardless of who they pick.
+    The nearest thing to a shared vocabulary in this space is the UPSTREAM data rather than the API:
+    CrawlGraph's release ids are Common Crawl's own (cc-main-2026-apr-may-jun, CC-MAIN-2026-17), so
+    a caller who already speaks Common Crawl can line results up against the public crawl without a
+    mapping table. That is real interoperability, but it is provenance interoperability, not a
+    domain API standard, and it is recorded as such.
+  evidence:
+    - {url: 'https://crawlgraph.com/docs/api', status: 200, note: 'section 6 — proprietary field names, stated as deliberate'}
+    - {url: 'https://github.com/pucilpet/crawlgraph-datasets', status: 200, note: 'datapackage.json on the study datasets — Frictionless Data, applies to the downloads not the API'}
+
 compliance:
   certifications_published: []
   trust_center: false
@@ -117,6 +145,14 @@ data_provenance:
     (cc-main-2026-apr-may-jun), and open-sources its study datasets under CC-BY at
     github.com/pucilpet/crawlgraph-datasets. Reproducibility is advertised as a feature
     ("open methodology · reproducible").
+
+x-rechecked:
+  date: '2026-09-02'
+  note: >-
+    Every standard above was re-probed. Nothing moved: same 200s, same 404s, same four MCP tools,
+    same absence of OAuth/OIDC/protected-resource metadata and agent card. Two immaterial changes —
+    the OpenAPI info.version advanced 1.2.0 -> 1.2.2 with no route, schema or field change, and the
+    security.txt was re-issued with a later Expires (2027-08-29).
 
 x-evidence:
   - {url: 'https://crawlgraph.com/api/v1/openapi.json', status: 200}

@@ -23,6 +23,7 @@ Original backlink-overlap studies on Common Crawl data (which domains link to ev
 
 ## Blog posts
 
+- [12 domains link to every major help desk](https://crawlgraph.com/blog/who-links-to-every-help-desk) (2026-08-17): we compared 8 help desks using the top 2,000 referring domains per subject from common crawl. 12 non-platform domains link to the full set.
 - [35 domains link to every major web host](https://crawlgraph.com/blog/who-links-to-every-web-host) (2026-08-10): we compared 8 web hosts using the top 2,000 referring domains per subject from common crawl. 35 non-platform domains link to the full set.
 - [13 domains link to every major no-code tool](https://crawlgraph.com/blog/who-links-to-every-no-code-tool) (2026-08-07): we compared 8 no-code tools using the top 2,000 referring domains per subject from common crawl. 13 non-platform domains link to the full set.
 - [the common crawl apr-jun 2026 index is live](https://crawlgraph.com/blog/common-crawl-apr-jun-2026-release) (2026-07-24): The new crawlgraph index combines CC-MAIN-2026-17, CC-MAIN-2026-21, and CC-MAIN-2026-25 into 121.1M domains and 3.90B domain-level links.

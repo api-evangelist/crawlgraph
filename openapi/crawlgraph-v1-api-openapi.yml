@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: CrawlGraph V1 API
   description: Free backlink intelligence powered by Common Crawl's hyperlink graph.
-  version: 1.2.0
+  version: 1.2.2
   contact:
     name: CrawlGraph support
     email: petteri@searchenginewizards.fi

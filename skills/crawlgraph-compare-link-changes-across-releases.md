@@ -3,7 +3,7 @@ generated: '2026-08-13'
 name: Compare link observations across Common Crawl releases
 method: generated
 description: Use the CrawlGraph changes endpoint to diff a domain's observed referring domains between two indexed Common Crawl snapshots — additions, absences, and authority movement.
-api: openapi/crawlgraph-v1-openapi.yml
+api: openapi/crawlgraph-v1-api-openapi.yml
 operations: [v1_list_releases_api_v1_releases_get, v1_changes_api_v1_changes_get]
 source: >-
   Grounded in the live OpenAPI 3.1.0 at https://crawlgraph.com/api/v1/openapi.json (verbatim copy

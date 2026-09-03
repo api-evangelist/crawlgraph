@@ -1,4 +1,4 @@
-generated: '2026-08-13'
+generated: '2026-09-02'
 method: searched
 source: https://registry.npmjs.org/crawlgraph-mcp
 also_from:
@@ -23,9 +23,13 @@ packages:
     kind: mcp-server
     official: true
     license: MIT
-    version: 0.1.0
-    published: '2026-05-31'
-    versions_published: 1
+    version: 0.2.2
+    published: '2026-08-17'
+    versions_published: 2
+    all_versions: ['0.1.0', '0.2.2']
+    previous_version: {version: 0.1.0, published: '2026-05-31'}
+    registry_metadata: https://registry.npmjs.org/crawlgraph-mcp
+    registry_modified: '2026-08-17'
     bin: crawlgraph-mcp
     install: npx -y crawlgraph-mcp
     runtime: node >=18
@@ -34,13 +38,21 @@ packages:
       MCP server for the CrawlGraph backlink-intelligence API. Four tools: backlinks,
       gap_analysis, gap_outreach_targets, releases.
     currency_note: >-
-      CURRENCY GAP. npm has exactly one release, 0.1.0, published 2026-05-31 and never updated.
-      The GitHub repository's package.json at master declares version 0.2.2 and the repo was
-      last pushed 2026-07-03 — so the published artifact is at least two minor versions behind
-      the source, and more than two months stale. Anyone running `npx -y crawlgraph-mcp` today
-      gets 0.1.0, not what the repo describes. This is the local-stdio path only; the hosted
-      endpoint at https://crawlgraph.com/mcp is served from the provider's own deploy and is
-      unaffected.
+      CURRENCY GAP CLOSED. The 2026-08-13 pass recorded npm stuck on 0.1.0 (2026-05-31) while the
+      GitHub master branch declared 0.2.2 — two minor versions and two months of drift, so that
+      `npx -y crawlgraph-mcp` shipped something the repo no longer described. The operator
+      published 0.2.2 to npm on 2026-08-17 and the gap is gone: registry latest, the master
+      package.json, and the hosted server's own serverInfo.version (probed via MCP `initialize`
+      at https://crawlgraph.com/mcp) all now read 0.2.2. Registry and source are in agreement,
+      and the hosted endpoint is running the same version as the package. This is the first
+      artifact in this repo to record a decay signal being repaired rather than worsening.
+    tool_count: 4
+    tools: [backlinks, gap_analysis, gap_outreach_targets, releases]
+    tools_note: >-
+      Four registerTool() calls in src/server.ts at master and four rows in the README's tool
+      table. The API docs state the local package "documents five read-only tools" and name a
+      fifth, backlink_changes — neither the published source nor the hosted tools/list carries it.
+      See mcp/crawlgraph-tool-crosswalk.yml for the divergence.
 
 registry_probes:
   - {registry: npm, package: crawlgraph-mcp, status: 200, found: true}
@@ -68,8 +80,17 @@ related_repositories:
       Open datasets from the backlink-overlap studies (CSV + JSON, with a datapackage.json).
       Data, not an interface — not a package.
     pushed: '2026-07-06'
+    rechecked: '2026-09-02'
 
 distribution_channels:
   - {channel: npm, url: 'https://www.npmjs.com/package/crawlgraph-mcp'}
   - {channel: smithery, note: 'repo ships smithery.yaml with a stdio startCommand', url: 'https://github.com/pucilpet/crawlgraph-mcp/blob/master/smithery.yaml'}
   - {channel: docker, note: 'repo ships a Dockerfile and DEPLOY.md; no published image located'}
+
+x-evidence:
+  - {url: 'https://registry.npmjs.org/crawlgraph-mcp', status: 200, note: 'dist-tags.latest 0.2.2, time 2026-08-17T19:44:22Z'}
+  - {url: 'https://raw.githubusercontent.com/pucilpet/crawlgraph-mcp/master/package.json', status: 200, note: 'version 0.2.2 — matches the registry'}
+  - {url: 'https://data.jsdelivr.com/v1/packages/npm/crawlgraph-mcp', status: 200, note: 'tags.latest 0.2.2'}
+  - {url: 'https://crawlgraph.com/mcp', status: 200, note: 'MCP initialize returns serverInfo {name: crawlgraph, version: 0.2.2}'}
+  - {url: 'https://registry.npmjs.org/crawlgraph', status: 404}
+  - {url: 'https://pypi.org/pypi/crawlgraph/json', status: 404}

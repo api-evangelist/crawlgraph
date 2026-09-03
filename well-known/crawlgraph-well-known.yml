@@ -1,13 +1,20 @@
-generated: '2026-08-13'
+generated: '2026-09-02'
 method: probed
 source: live probes of /.well-known/ on crawlgraph.com
 note: >-
-  One real hit: a served RFC 9116 security.txt. Everything else 404s. Note that crawlgraph.com
-  returns a genuine HTTP 404 for unknown /.well-known/* paths (it is a Next.js app with real
-  status codes), so these are true absences rather than SPA soft-200s. Separately, several
-  ordinary site paths (/pricing, /status, /changelog, /faq) DO soft-404: they return HTTP 200
-  carrying the app's "<path> isn't a valid domain name" fallback. Those are recorded as misses
-  elsewhere in this repo and must not be credited as published pages.
+  Re-probed 2026-09-02. Result is unchanged from the 2026-08-13 pass: ONE real hit, a served
+  RFC 9116 security.txt, and a genuine HTTP 404 on every other well-known path. crawlgraph.com is
+  a Next.js app that returns real status codes for unknown /.well-known/* paths, so these are true
+  absences rather than SPA soft-200s — the 404 bodies are the app's HTML error page, which is the
+  correct read of a 404, not a false positive.
+  ONE THING DID CHANGE, and it is worth recording: the ordinary site paths that used to soft-404
+  directly (/pricing, /status, /changelog, /support, /roadmap, /docs, /faq) now answer HTTP 308 and
+  redirect into the /backlinks/<domain> report route, which then serves HTTP 200 carrying
+  "<path> isn't a valid domain name". The failure mode is the same soft-404 as before, reached one
+  hop later. Following the redirect and reading the body is now mandatory before crediting any of
+  those pages; the status code alone says 200 twice over.
+  The security.txt itself was refreshed by the provider since the last pass — Expires moved from
+  2027-08-07 to 2027-08-29 — so the verbatim copy in this directory has been re-harvested.
 
 hosts:
   - host: https://crawlgraph.com
@@ -31,7 +38,7 @@ hosts:
         status: 404
       - path: /.well-known/agent.json
         status: 404
-      - path: /.well-known/mcp.json
+      - path: /.well-known/aauth-resource.json
         status: 404
 
 security_txt:
@@ -39,16 +46,34 @@ security_txt:
   url: https://crawlgraph.com/.well-known/security.txt
   fields:
     Contact: mailto:petteri@searchenginewizards.fi
-    Expires: '2027-08-07T11:05:56.074Z'
+    Expires: '2027-08-29T01:35:32.224Z'
     Preferred-Languages: en, fi
     Canonical: https://crawlgraph.com/.well-known/security.txt
   missing_recommended_fields: [Policy, Encryption, Acknowledgments, Hiring, CSAF]
   unexpired: true
+  refreshed_since_last_pass: true
+  previous_expires: '2027-08-07T11:05:56.074Z'
   note: >-
-    Minimal but valid and unexpired. Carries Contact, Expires, Preferred-Languages and Canonical.
-    No Policy field, so there is no published vulnerability-disclosure policy to point at.
+    Minimal but valid and unexpired, and actively maintained — the operator re-issued it with a
+    later Expires between 2026-08-13 and 2026-09-02, which is more than most security.txt
+    publishers do. Still no Policy field, so there is no published vulnerability-disclosure
+    policy document to point at; the Contact address is the whole programme.
+
+soft_404_routes:
+  note: >-
+    Recorded so no later pass credits these as published pages. Each returns 308 then 200, and the
+    200 body is the "isn't a valid domain name" fallback of the /backlinks/<domain> report route.
+  routes:
+    - {path: /pricing,   status: 308, redirects_to: /backlinks/pricing,   final_status: 200, result: soft-404}
+    - {path: /status,    status: 308, redirects_to: /backlinks/status,    final_status: 200, result: soft-404}
+    - {path: /changelog, status: 308, redirects_to: /backlinks/changelog, final_status: 200, result: soft-404}
+    - {path: /support,   status: 308, redirects_to: /backlinks/support,   final_status: 200, result: soft-404}
+    - {path: /roadmap,   status: 308, redirects_to: /backlinks/roadmap,   final_status: 200, result: soft-404}
+    - {path: /faq,       status: 308, redirects_to: /backlinks/faq,       final_status: 200, result: soft-404}
+    - {path: /docs,      status: 308, redirects_to: /backlinks/docs,      final_status: 200, result: soft-404}
+    - {path: /openapi.json, status: 308, redirects_to: /backlinks/openapi.json, final_status: 200, result: soft-404, note: 'HTML, not a spec. The real spec is at /api/v1/openapi.json.'}
 
 x-evidence:
-  fetched: '2026-08-13'
+  fetched: '2026-09-02'
   probe_count: 9
   hits: 1

@@ -1,7 +1,7 @@
-generated: '2026-08-13'
+generated: '2026-09-02'
 method: searched
 source: https://crawlgraph.com/docs/api
-also_derived_from: openapi/crawlgraph-v1-openapi.yml
+also_derived_from: openapi/crawlgraph-v1-api-openapi.yml
 summary: >-
   Cross-cutting request/response semantics for the CrawlGraph REST API v1 and the hosted MCP
   server, captured from the published docs and the live OpenAPI. JSON in, JSON out, bearer auth,
@@ -37,6 +37,79 @@ idempotency:
   not_safe_to_retry:
     - POST /api/v1/gap-analysis
     - POST /api/v1/free-key
+
+reversibility:
+  grade: documented
+  summary: >-
+    Nearly the whole surface is read-only, so reversibility is `na` for four of six operations.
+    Only two operations change state, and they sit at opposite ends of the scale: an API key can
+    be fully revoked from the account page at any time with no window, and a gap-analysis job
+    cannot be cancelled, refunded or undone at all. The grade is `documented` rather than
+    `verified` because the one real reversal — key revocation — is described in the docs
+    ("revoke and create a new one") without a stated window or a documented API operation, and
+    because the irreversible side is stated but not bounded. NO WINDOW IS ASSERTED HERE THAT THE
+    PROVIDER DOES NOT STATE.
+  write_surfaces:
+    - operation: request_free_key_api_v1_free_key_post
+      path: POST /api/v1/free-key
+      effect: >-
+        Provisions a free-tier API credential and emails it. One active key per email address.
+      reversal:
+        exists: true
+        mechanism: revoke the key from the account page
+        operation_id: null
+        api_operation: none — revocation is a dashboard action, not a published REST operation
+        window: >-
+          None stated, and none needed: the docs place no time limit on revocation. A revoked key
+          fails closed immediately with 401 auth_invalid.
+        window_documented: false
+        docs: https://crawlgraph.com/docs/api
+        quote: >-
+          "The full key is shown only once at creation. If you lose it, revoke and create a new
+          one - there's no recovery path."
+        caveat: >-
+          Revocation destroys the credential; it does not recover it. There is no key-recovery
+          path, so the reversal available is "make this key stop working", never "get this key
+          back". An agent that loses a key must re-provision, and the free tier allows only one
+          active key per email.
+      grade: documented
+    - operation: v1_gap_submit_api_v1_gap_analysis_post
+      path: POST /api/v1/gap-analysis
+      effect: >-
+        Creates an owner-scoped async job (retained 7 days) and immediately spends one of the
+        50 monthly gap jobs.
+      reversal:
+        exists: false
+        mechanism: none
+        operation_id: null
+        window: null
+        window_documented: false
+        docs: https://crawlgraph.com/docs/api
+        quote: 'Failed jobs don''t refund quota in v1. Email support with the request_id if it matters.'
+        caveat: >-
+          There is no cancel, no delete, and no refund. Even a job that FAILS on the server side
+          keeps the quota it consumed; the only remedy named is a human email to support quoting
+          the request_id. An agent should treat every gap submission as spend that cannot be
+          recovered, and should not retry a failed job speculatively — a retry costs another job
+          from the same 50.
+      grade: none
+  read_only_operations:
+    - v1_lookup_backlinks_api_v1_backlinks_post
+    - v1_list_releases_api_v1_releases_get
+    - v1_gap_poll_api_v1_gap_analysis__job_id__get
+    - v1_changes_api_v1_changes_get
+  note: >-
+    POST /api/v1/backlinks is a POST but not a write: it uses a request body to carry the query
+    and has no persistent effect beyond decrementing quota. The MCP tool that wraps it publishes
+    readOnlyHint true / destructiveHint false. It is therefore `na` for reversibility.
+
+dry_run_mode:
+  supported: false
+  status: na
+  note: >-
+    No test mode, no simulate/validate flag, no preview parameter on any operation. It matters
+    little for the read paths, but it means there is no way to rehearse a gap submission before
+    it spends a job. See sandbox/crawlgraph-sandbox.yml.
 
 pagination:
   supported: false

@@ -1,0 +1,75 @@
+generated: '2026-09-02'
+method: searched
+source: https://crawlgraph.com/docs/api
+also_from:
+  - https://crawlgraph.com/
+  - https://crawlgraph.com/terms
+summary: >-
+  CrawlGraph publishes NO sandbox. There is no test mode, no test key prefix, no fixture or trigger
+  tooling, no time simulation, and no separate non-production host — every key is a `cg_live_` key
+  and every call hits production data and spends real quota. This file records that absence
+  deliberately rather than omitting it, because the shape of what IS offered is easy to mistake for
+  a sandbox and should not be scored as one.
+sandbox_published: false
+test_mode: false
+test_environment: false
+test_credentials: false
+fixtures_or_triggers: false
+time_simulation: false
+separate_host: false
+key_prefixes:
+  live: cg_live_
+  test: null
+  note: >-
+    One prefix only. There is no cg_test_ equivalent, so a client cannot tell a rehearsal from a
+    real call because there is no rehearsal to tell it from.
+
+what_exists_instead:
+  - kind: anonymous-web-checker
+    url: https://crawlgraph.com/
+    signup_required: false
+    description: >-
+      Paste any domain on the landing page and see the first 5 referring domains with no account
+      and no card. Real production data, not fixtures.
+    is_a_sandbox: false
+    why_not: >-
+      It is the product's free preview, not a developer console — no request builder, no key, no
+      way to exercise the API surface, and it exposes only the backlinks read path.
+  - kind: free-api-tier
+    url: https://crawlgraph.com/docs/api
+    signup_required: 'email only (POST /api/v1/free-key), no card'
+    quota: 15 backlink calls per calendar month
+    description: >-
+      A self-serve free key emailed on request. This is the nearest thing to a trial surface and it
+      is a genuinely low-friction one.
+    is_a_sandbox: false
+    why_not: >-
+      It runs against production with a production key and a production quota. A call made to learn
+      the API is indistinguishable from a real one and costs the same — 1 of 15 for the month.
+  - kind: inline-key-request-form
+    url: https://crawlgraph.com/docs/api
+    description: An email field inside the Quickstart so a reader can get a key without leaving the page.
+    is_a_sandbox: false
+
+consequences_for_agents:
+  - >-
+    There is no safe rehearsal. An agent cannot dry-run a gap analysis: the submission spends one of
+    50 monthly jobs, failed jobs are not refunded in v1, and no cancel exists. See the
+    reversibility block in conventions/crawlgraph-conventions.yml.
+  - >-
+    On the free tier, 15 calls is the entire monthly budget for both learning and using the API,
+    and GET /api/v1/changes draws from the same bucket as POST /api/v1/backlinks.
+  - >-
+    Validation errors, auth failures and quota rejections are explicitly NOT counted, which is the
+    one genuine safety valve: a malformed request costs nothing, so schema experimentation is free
+    even though successful calls are not.
+
+pointer_emitted: false
+pointer_note: >-
+  No `Sandbox` pointer is wired into apis.yml. The provider publishes no sandbox, console or
+  playground for the API, and a free tier against production is not one. This artifact documents a
+  measured absence; it must not be read as a present surface.
+
+x-evidence:
+  - {url: 'https://crawlgraph.com/docs/api', status: 200, note: 'sections 1, 2 and 4 — one key prefix, one production host, quotas counted on success'}
+  - {url: 'https://crawlgraph.com/', status: 200, note: 'anonymous 5-result web checker, no signup'}

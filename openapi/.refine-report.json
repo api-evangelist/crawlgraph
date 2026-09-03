@@ -1,0 +1,19 @@
+{
+  "provider": "crawlgraph",
+  "sources": [
+    "crawlgraph-v1-openapi.yml"
+  ],
+  "outputs": [
+    "crawlgraph-v1-api-openapi.yml"
+  ],
+  "archived": [
+    "archived openapi/crawlgraph-v1-openapi.yml"
+  ],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "crawlgraph-v1-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "apis.yml register: written (+1 apis, 2 total)"
+  ],
+  "skipped": []
+}

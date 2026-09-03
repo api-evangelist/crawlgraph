@@ -38,7 +38,7 @@ description: >-
   as a one-time $99 lifetime licence rather than a subscription.
 url: https://raw.githubusercontent.com/api-evangelist/crawlgraph/refs/heads/main/apis.yml
 created: '2026-07-03'
-modified: '2026-08-13'
+modified: '2026-09-02'
 specificationVersion: '0.23'
 tags:
   - SEO
@@ -120,7 +120,9 @@ apis:
     url: data-model/crawlgraph-data-model.yml
   - type: RateLimits
     url: rate-limits/crawlgraph-rate-limits.yml
-  - type: LLMSTxt
+  - type: Examples
+    url: examples/crawlgraph-v1-examples.yml
+  - type: LLMsTxt
     url: https://crawlgraph.com/llms.txt
 maintainers:
   - FN: Petteri Pucilowski (pucilpet)
@@ -133,6 +135,8 @@ generated:
   confidence: 85
   at: '2026-07-03T11:50:54.356Z'
 common:
+- type: AgenticAccess
+  url: agentic-access/crawlgraph-agentic-access.yml
 - type: License
   name: MIT
   url: https://github.com/pucilpet/crawlgraph-mcp/blob/master/LICENSE
@@ -155,7 +159,7 @@ common:
 - type: PrivacyPolicy
   url: https://crawlgraph.com/privacy
 - type: OpenAPI
-  url: openapi/crawlgraph-v1-openapi.yml
+  url: openapi/crawlgraph-v1-api-openapi.yml
 - type: MCPServer
   url: mcp/crawlgraph-mcp.yml
 - type: ToolCrosswalk
@@ -194,10 +198,21 @@ common:
   url: packages/crawlgraph-packages.yml
 - type: Overlay
   url: overlays/crawlgraph-v1-overlay.yaml
+- type: Examples
+  url: examples/crawlgraph-v1-examples.yml
+- type: Pricing
+  url: https://crawlgraph.com/#pricing
+- type: GitHubOrganization
+  url: https://github.com/pucilpet
+- type: Deprecation
+  url: lifecycle/crawlgraph-lifecycle.yml
 x-enrichment:
-  date: '2026-08-13'
+  date: '2026-09-02'
   status: enriched
-  artifacts_added: 25
+  artifacts_added: 3
+  artifacts_updated: 16
   pass: local-v1
+  previous:
+    - {date: '2026-08-13', status: enriched, artifacts_added: 25}
 x-coverage:
   state: covered

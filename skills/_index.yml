@@ -13,12 +13,12 @@ skills:
   - file: crawlgraph-look-up-referring-domains.md
     name: Look up referring domains for a domain
     surface: rest
-    api: openapi/crawlgraph-v1-openapi.yml
+    api: openapi/crawlgraph-v1-api-openapi.yml
     operations: [request_free_key_api_v1_free_key_post, v1_list_releases_api_v1_releases_get, v1_lookup_backlinks_api_v1_backlinks_post]
   - file: crawlgraph-run-a-competitor-gap-analysis.md
     name: Run a competitor backlink gap analysis
     surface: rest
-    api: openapi/crawlgraph-v1-openapi.yml
+    api: openapi/crawlgraph-v1-api-openapi.yml
     operations: [v1_gap_submit_api_v1_gap_analysis_post, v1_gap_poll_api_v1_gap_analysis__job_id__get, v1_lookup_backlinks_api_v1_backlinks_post]
   - file: crawlgraph-find-warm-outreach-targets.md
     name: Find warm outreach targets over MCP
@@ -28,7 +28,7 @@ skills:
   - file: crawlgraph-compare-link-changes-across-releases.md
     name: Compare link observations across Common Crawl releases
     surface: rest
-    api: openapi/crawlgraph-v1-openapi.yml
+    api: openapi/crawlgraph-v1-api-openapi.yml
     operations: [v1_list_releases_api_v1_releases_get, v1_changes_api_v1_changes_get]
 coverage:
   rest_operations_total: 6

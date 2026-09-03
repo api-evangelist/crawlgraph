@@ -3,7 +3,7 @@ generated: '2026-08-13'
 name: Run a competitor backlink gap analysis
 method: generated
 description: Submit an async CrawlGraph gap-analysis job to find domains linking to your competitors but not to you, poll it to completion, and score the results into an outreach list.
-api: openapi/crawlgraph-v1-openapi.yml
+api: openapi/crawlgraph-v1-api-openapi.yml
 operations: [v1_gap_submit_api_v1_gap_analysis_post, v1_gap_poll_api_v1_gap_analysis__job_id__get, v1_lookup_backlinks_api_v1_backlinks_post]
 source: >-
   Grounded in the live OpenAPI 3.1.0 at https://crawlgraph.com/api/v1/openapi.json (verbatim copy

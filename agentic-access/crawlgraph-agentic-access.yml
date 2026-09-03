@@ -1,0 +1,106 @@
+generated: '2026-09-02'
+method: generated
+source: openapi/crawlgraph-v1-api-openapi.yml
+description: Recommended x-agentic-access execution contracts, classified heuristically from
+  the OpenAPI. A governance starting point for exposing this API to AI agents — review and bind
+  audience per deployment. See research/curity/agentic-governance/.
+summary:
+  operations: 6
+  by_action_class:
+    acting: 3
+    connected: 3
+  by_consequence:
+    write: 3
+    read: 3
+  human_in_the_loop_required: 0
+operations:
+- path: /api/v1/backlinks
+  method: post
+  operationId: v1_lookup_backlinks_api_v1_backlinks_post
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: required
+    audience: null
+    token:
+      max-ttl: 3600
+    audit: metered
+  correction:
+    from: {action-class: acting, consequence: write}
+    reason: >-
+      The HTTP-method heuristic read POST as a write. It is not: this is a read-only backlink
+      lookup that uses POST only to carry a JSON request body. The provider says so on two
+      surfaces — the MCP tool that wraps this operation publishes
+      annotations {readOnlyHint: true, destructiveHint: false, idempotentHint: true}
+      (probed at https://crawlgraph.com/mcp), and the docs describe it as a "synchronous backlink
+      lookup". It has no persistent side effect other than decrementing the caller's monthly
+      quota, which is why audit is `metered` rather than `none`.
+    method: searched
+    source: https://crawlgraph.com/docs/api
+- path: /api/v1/free-key
+  method: post
+  operationId: request_free_key_api_v1_free_key_post
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /api/v1/releases
+  method: get
+  operationId: v1_list_releases_api_v1_releases_get
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /api/v1/gap-analysis
+  method: post
+  operationId: v1_gap_submit_api_v1_gap_analysis_post
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+  note: >-
+    Kept as a write. The analysis itself is read-only, but the call creates a durable, owner-scoped
+    job resource retained for 7 days AND spends one of 50 monthly gap jobs. The docs state failed
+    jobs do not refund quota in v1, so a retry is not free and there is no cancel operation —
+    see the reversibility block in conventions/crawlgraph-conventions.yml.
+- path: /api/v1/gap-analysis/{job_id}
+  method: get
+  operationId: v1_gap_poll_api_v1_gap_analysis__job_id__get
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /api/v1/changes
+  method: get
+  operationId: v1_changes_api_v1_changes_get
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none

@@ -1,4 +1,4 @@
-generated: '2026-08-13'
+generated: '2026-09-02'
 method: searched
 source: https://crawlgraph.com/llms.txt
 also_from:
@@ -7,9 +7,11 @@ also_from:
   - https://crawlgraph.com/terms       # payment + "lifetime" definition
 plan_count: 3
 note: >-
-  There is no standalone pricing page: https://crawlgraph.com/pricing returns HTTP 200 but is a
-  SOFT-404 — it renders the app's "pricing isn't a valid domain name" fallback rather than a
-  pricing document. The real pricing lives in a section of the landing page and, machine-readably,
+  There is no standalone pricing page. Re-probed 2026-09-02: https://crawlgraph.com/pricing now
+  returns HTTP 308 to /backlinks/pricing, which returns HTTP 200 rendering "pricing isn't a valid
+  domain name" — the domain-report route's fallback, not a pricing document. The site's own nav
+  links "pricing" to the #pricing section of the landing page, which is where the tiers actually
+  live. The real pricing lives in a section of the landing page and, machine-readably,
   in the provider's own llms.txt. Pricing is unusually plain for this category: one lifetime price,
   no subscription, no seats, no credit packs.
 
@@ -85,8 +87,15 @@ fair_use:
     or coordinated abuse", and state that public-API fair-use limits may change at the operator's
     discretion.
 
+x-rechecked:
+  date: '2026-09-02'
+  note: >-
+    Tiers, prices and quotas are unchanged since 2026-08-13 — Free, $99 lifetime, $5/mo SEO Fix
+    add-on. Only the route behaviour of /pricing changed.
+
 x-evidence:
-  - {url: 'https://crawlgraph.com/llms.txt', status: 200, note: '## Pricing section, machine-readable'}
+  - {url: 'https://crawlgraph.com/llms.txt', status: 200, note: '## Pricing section, machine-readable', checked: '2026-09-02'}
   - {url: 'https://crawlgraph.com/', status: 200, note: pricing section on the landing page}
-  - {url: 'https://crawlgraph.com/pricing', status: 200, note: 'SOFT-404 — renders "pricing isn''t a valid domain name"; not a pricing page'}
+  - {url: 'https://crawlgraph.com/pricing', status: 308, note: 'redirects to /backlinks/pricing -> 200 SOFT-404 "pricing isn''t a valid domain name"; not a pricing page', checked: '2026-09-02'}
+  - {url: 'https://crawlgraph.com/#pricing', status: 200, note: 'the real pricing surface — a section of the landing page, id="pricing" present in the served HTML', checked: '2026-09-02'}
   - {url: 'https://crawlgraph.com/terms', status: 200, note: 'defines "lifetime" and the 24-month availability commitment'}

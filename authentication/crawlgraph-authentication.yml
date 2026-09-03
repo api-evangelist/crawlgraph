@@ -1,7 +1,7 @@
 generated: '2026-08-13'
 method: searched
 source: https://crawlgraph.com/docs/api
-also_derived_from: openapi/crawlgraph-v1-openapi.yml
+also_derived_from: openapi/crawlgraph-v1-api-openapi.yml
 note: >-
   The upstream OpenAPI (https://crawlgraph.com/api/v1/openapi.json) declares NO
   components.securitySchemes and no security requirement — a real gap, since every /api/v1/*
@@ -31,7 +31,7 @@ schemes:
       prefixed cg_live_ and are roughly 52 characters long.
     sources:
       - https://crawlgraph.com/docs/api
-      - openapi/crawlgraph-v1-openapi.yml
+      - openapi/crawlgraph-v1-api-openapi.yml
 
 key_management:
   self_service: true

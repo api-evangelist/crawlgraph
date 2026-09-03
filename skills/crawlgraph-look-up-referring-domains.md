@@ -3,7 +3,7 @@ generated: '2026-08-13'
 name: Look up referring domains for a domain
 method: generated
 description: Get a free CrawlGraph API key, then pull the referring domains (backlinks) for any target domain from the Common Crawl webgraph, ranked by authority.
-api: openapi/crawlgraph-v1-openapi.yml
+api: openapi/crawlgraph-v1-api-openapi.yml
 operations: [request_free_key_api_v1_free_key_post, v1_list_releases_api_v1_releases_get, v1_lookup_backlinks_api_v1_backlinks_post]
 source: >-
   Grounded in the live OpenAPI 3.1.0 at https://crawlgraph.com/api/v1/openapi.json (verbatim copy

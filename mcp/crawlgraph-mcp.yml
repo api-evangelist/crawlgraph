@@ -1,4 +1,4 @@
-generated: '2026-08-13'
+generated: '2026-09-02'
 method: probed
 status: published
 source: https://crawlgraph.com/mcp
@@ -11,6 +11,10 @@ note: >-
   every tool. Tool DISCOVERY is open; tool INVOCATION requires the same cg_live_ bearer key as the
   REST API. The verbatim tools/list result is saved at mcp/crawlgraph-mcp-tools.json.
   This corrects the July 2026 profile note, which recorded "there is NO hosted/remote MCP endpoint".
+  RE-PROBED 2026-09-02: unchanged. tools/list still answers anonymously with the same four tools,
+  byte-identical to the 2026-08-13 capture. `initialize` now reports
+  serverInfo {name: crawlgraph, version: 0.2.2, protocolVersion: 2025-06-18}, matching the npm
+  package, which shipped 0.2.2 on 2026-08-17.
 
 deployment:
   mode: both
@@ -19,6 +23,8 @@ deployment:
   package: https://www.npmjs.com/package/crawlgraph-mcp
   auth: api-key
   verified: probed
+  server_version: 0.2.2
+  protocol_version: '2025-06-18'
 
 transport:
   remote:
@@ -66,6 +72,29 @@ client_setup_documented:
     note: local stdio fallback for clients without remote-server support
 
 tool_count: 4
+documented_but_not_served:
+  - name: backlink_changes
+    documented_at: 'https://crawlgraph.com/docs/api'
+    documented_as: >-
+      Section 3 lists five tools and describes backlink_changes as "additions, observed absences,
+      and authority movement between Common Crawl releases", costing one backlinks call. The same
+      section states "The current local package documents five read-only tools; hosted package
+      versions are released separately and must be checked with tools/list before relying on a
+      newly added tool."
+    served_by_hosted_endpoint: false
+    present_in_published_package: false
+    evidence:
+      - {url: 'https://crawlgraph.com/mcp', status: 200, note: 'tools/list returns 4 tools; backlink_changes absent'}
+      - {url: 'https://raw.githubusercontent.com/pucilpet/crawlgraph-mcp/master/src/server.ts', status: 200, note: 'four registerTool() calls at master (0.2.2); no backlink_changes'}
+      - {url: 'https://raw.githubusercontent.com/pucilpet/crawlgraph-mcp/master/README.md', status: 200, note: 'tool table lists four tools; "the four tools appear"'}
+    backing_rest_operation: v1_changes_api_v1_changes_get
+    note: >-
+      An honest divergence, not a fabrication by either side: the REST operation
+      GET /api/v1/changes is real and shipped, and the docs describe the tool that would wrap it,
+      but no MCP surface exposes it today. The provider's own docs tell the reader to trust
+      tools/list over the prose, which is the correct instruction — an agent that reads the docs
+      and plans a backlink_changes call will fail at invocation time. Recorded here so the
+      catalog reflects what is CALLABLE, not what is described.
 tools:
   - name: backlinks
     title: Backlink lookup
@@ -126,7 +155,9 @@ schema_quality:
     stronger than the catalog norm, where outputSchema is usually absent.
 
 x-evidence:
-  fetched: '2026-08-13'
+  fetched: '2026-09-02'
+  first_fetched: '2026-08-13'
+  unchanged_since_first_fetch: true
   url: https://crawlgraph.com/mcp
   method: POST tools/list (jsonrpc 2.0)
   http_status: 200

@@ -1,4 +1,4 @@
-generated: '2026-08-13'
+generated: '2026-09-02'
 method: derived
 source: >-
   Derived by binding the live MCP tool list (probed anonymously at https://crawlgraph.com/mcp,
@@ -14,7 +14,7 @@ purpose: >-
 
 surfaces:
   rest_openapi:
-    spec: openapi/crawlgraph-v1-openapi.yml
+    spec: openapi/crawlgraph-v1-api-openapi.yml
     original: openapi/_original/crawlgraph-openapi.json
     url: https://crawlgraph.com/api/v1/openapi.json
     base: https://crawlgraph.com
@@ -68,6 +68,23 @@ crosswalk:
 
 mcp_only: []
 
+documented_not_served:
+  - tool: backlink_changes
+    would_bind_to: [v1_changes_api_v1_changes_get]
+    documented_at: 'https://crawlgraph.com/docs/api'
+    served: false
+    confidence: high
+    note: >-
+      Named and described in docs section 3 but absent from BOTH the hosted tools/list (probed
+      anonymously, HTTP 200, 4 tools) and the published open-source server (four registerTool()
+      calls at master). It is not mapped into crosswalk[] because there is nothing live to map —
+      a tool an agent cannot call is not an agent surface. The provider's docs pre-empt the
+      confusion themselves: "hosted package versions are released separately and must be checked
+      with tools/list before relying on a newly added tool."
+    evidence:
+      - {url: 'https://crawlgraph.com/mcp', status: 200, note: 'tools/list — 4 tools'}
+      - {url: 'https://raw.githubusercontent.com/pucilpet/crawlgraph-mcp/master/src/server.ts', status: 200, note: '4 registerTool() calls'}
+
 rest_only:
   - operation: request_free_key_api_v1_free_key_post
     path: POST /api/v1/free-key
@@ -81,6 +98,11 @@ rest_only:
       Cross-release change comparison (added / removed / authority_moved referring domains between
       two Common Crawl snapshots). Documented in the REST reference and present in the OpenAPI, but
       NOT exposed as an MCP tool — the newest REST capability has not reached the agent surface.
+      UPDATED 2026-09-02: the gap is now also a documentation gap. The API docs describe a fifth
+      MCP tool, backlink_changes, that would wrap exactly this operation, and say the local package
+      "documents five read-only tools". It does not: the hosted tools/list returns four, and
+      src/server.ts at master (0.2.2) makes four registerTool() calls. The operation remains
+      rest_only. See documented_not_served below.
 
 divergence:
   summary: >-
@@ -97,4 +119,12 @@ coverage:
   rest_operations: 6
   rest_operations_with_a_tool: 4
   rest_only_operations: 2
+  documented_not_served_tools: 1
   binding_confidence: {high: 4, medium: 0, low: 0}
+
+x-evidence:
+  - {url: 'https://crawlgraph.com/mcp', status: 200, note: 'POST tools/list, anonymous, 4 tools — byte-identical to the 2026-08-13 capture'}
+  - {url: 'https://crawlgraph.com/api/v1/openapi.json', status: 200, note: 'OpenAPI 3.1.0 info.version 1.2.2, 6 operations — unchanged from 1.2.0 apart from the version string'}
+  - {url: 'https://raw.githubusercontent.com/pucilpet/crawlgraph-mcp/master/src/server.ts', status: 200}
+
+x-rechecked: '2026-09-02'
