@@ -135,6 +135,8 @@ generated:
   confidence: 85
   at: '2026-07-03T11:50:54.356Z'
 common:
+- type: Website
+  url: https://www.crawlgraph.com/
 - type: AgenticAccess
   url: agentic-access/crawlgraph-agentic-access.yml
 - type: License
