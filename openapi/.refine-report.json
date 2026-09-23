@@ -1,19 +1,23 @@
 {
   "provider": "crawlgraph",
   "sources": [
-    "crawlgraph-v1-openapi.yml"
+    "_original/crawlgraph-openapi.json"
   ],
   "outputs": [
     "crawlgraph-v1-api-openapi.yml"
   ],
-  "archived": [
-    "archived openapi/crawlgraph-v1-openapi.yml"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
-    "crawlgraph-v1-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "apis.yml register: written (+1 apis, 2 total)"
+    "1 archived document(s) dropped as subsets of other archived documents",
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "crawlgraph-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "crawlgraph-openapi.json: declared missing tag: v1",
+    "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "_original/crawlgraph-v1-openapi.yml: archived document superseded by a larger archived document",
+    "crawlgraph-v1-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }
