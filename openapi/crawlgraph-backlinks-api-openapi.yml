@@ -1,0 +1,198 @@
+openapi: 3.2.0
+info:
+  title: CrawlGraph Backlinks API
+  description: Free backlink intelligence powered by Common Crawl's hyperlink graph.
+  version: 1.2.2
+tags:
+- name: Backlinks
+paths:
+  /api/v1/backlinks:
+    post:
+      tags:
+      - Backlinks
+      summary: Look up referring domains for a target domain
+      description: 'Public-API backlink lookup.
+
+
+        Validates ``domain`` and ``release_id`` (400 ``validation_error`` on
+
+        failure), charges one call against the caller''s monthly
+
+        ``backlinks`` quota (429 ``quota_exceeded`` on overflow), then runs
+
+        the same DuckDB query the internal route uses and returns the
+
+        sliced results.'
+      operationId: v1_lookup_backlinks_api_v1_backlinks_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1BacklinksBody'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1BacklinksResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    V1BacklinksResponse:
+      properties:
+        domain:
+          type: string
+          title: Domain
+        release_id:
+          type: string
+          title: Release Id
+        release_label:
+          type: string
+          title: Release Label
+        total_linking_domains:
+          type: integer
+          title: Total Linking Domains
+          description: Number of distinct linking domains retrieved before the `limit` slice was applied.
+        returned:
+          type: integer
+          title: Returned
+          description: Number of rows actually included in `results`.
+        cg_authority:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cg Authority
+          description: 0..100 log-rank percentile for the queried `domain`. NULL when the domain is missing from the ranks file.
+        cg_rank:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cg Rank
+          description: Raw PageRank position of the queried `domain` (1 = top). NULL when the domain is missing from the ranks file.
+        results:
+          items:
+            $ref: '#/components/schemas/V1BacklinkItem'
+          type: array
+          title: Results
+      type: object
+      required:
+      - domain
+      - release_id
+      - release_label
+      - total_linking_domains
+      - returned
+      - results
+      title: V1BacklinksResponse
+      description: Top-level response body for ``POST /api/v1/backlinks``.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    V1BacklinksBody:
+      properties:
+        domain:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Domain
+          description: Target domain to look up backlinks for, e.g. 'example.com'.
+        release_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Release Id
+          description: Common Crawl release id. Defaults to the latest release.
+        limit:
+          type: integer
+          maximum: 10000.0
+          minimum: 1.0
+          title: Limit
+          description: Max number of result rows to return (1..10000).
+          default: 1000
+        sort:
+          type: string
+          enum:
+          - authority
+          - hosts
+          title: Sort
+          description: Result ordering. 'authority' (default) sorts by cg_authority DESC then num_hosts DESC. 'hosts' preserves the legacy num_hosts DESC ordering.
+          default: authority
+      type: object
+      required:
+      - domain
+      title: V1BacklinksBody
+      description: Request body for ``POST /api/v1/backlinks``.
+    V1BacklinkItem:
+      properties:
+        linking_domain:
+          type: string
+          title: Linking Domain
+        num_hosts:
+          type: integer
+          title: Num Hosts
+        tld:
+          type: string
+          title: Tld
+        cg_authority:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cg Authority
+        cg_rank:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cg Rank
+      type: object
+      required:
+      - linking_domain
+      - num_hosts
+      - tld
+      title: V1BacklinkItem
+      description: 'One referring-domain row in the response.
+
+
+        ``tld`` is the last label of ``linking_domain`` (no leading dot).
+
+        ``cg_authority`` is a 0..100 log-rank percentile from the Common
+
+        Crawl harmonic-centrality ranking (higher = more authoritative).
+
+        ``cg_rank`` is the raw PageRank position across the whole graph
+
+        (1 = top-ranked domain on the web). Both are NULL for domains
+
+        that don''t appear in the ranks file.'
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

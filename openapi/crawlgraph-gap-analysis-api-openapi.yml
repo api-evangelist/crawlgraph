@@ -1,0 +1,256 @@
+openapi: 3.2.0
+info:
+  title: CrawlGraph Gap Analysis API
+  description: Free backlink intelligence powered by Common Crawl's hyperlink graph.
+  version: 1.2.2
+tags:
+- name: Gap Analysis
+paths:
+  /api/v1/gap-analysis:
+    post:
+      tags:
+      - Gap Analysis
+      summary: Submit an async gap-analysis job
+      description: 'Queue a gap-analysis job and return a poll URL.
+
+
+        Validates the input domains, charges one call against the caller''s
+
+        monthly ``gap`` quota (429 ``quota_exceeded`` on overflow), creates
+
+        a row in ``export_jobs`` (``kind="gap"``), and schedules the worker
+
+        via FastAPI''s ``BackgroundTasks``. The poll endpoint reads the same
+
+        table and is owner-scoped.'
+      operationId: v1_gap_submit_api_v1_gap_analysis_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1GapBody'
+        required: true
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1GapSubmitResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/gap-analysis/{job_id}:
+    get:
+      tags:
+      - Gap Analysis
+      summary: Poll a gap-analysis job
+      description: 'Return the current status of a gap-analysis job.
+
+
+        Owner-scoped - jobs that don''t exist or that belong to another user
+
+        both return ``404 not_found`` (``get_job_for_user`` enforces the
+
+        ownership check; we can''t distinguish the two cases, which is the
+
+        point - never leak another user''s job ids).'
+      operationId: v1_gap_poll_api_v1_gap_analysis__job_id__get
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Job Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1GapStatusResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    V1GapSubmitResponse:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+        status:
+          type: string
+          title: Status
+          description: Always ``"queued"`` on submit.
+        poll_url:
+          type: string
+          title: Poll Url
+          description: GET this URL to poll job status.
+      type: object
+      required:
+      - job_id
+      - status
+      - poll_url
+      title: V1GapSubmitResponse
+      description: '``202`` response body when a job is queued.'
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    V1GapStatusResponse:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+        status:
+          type: string
+          title: Status
+          description: One of "queued" | "running" | "completed" | "failed".
+        progress_pct:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Progress Pct
+          description: 0..100 progress hint while ``status == "running"``.
+        started_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Started At
+          description: ISO 8601 timestamp; populated once the worker picks up the job.
+        completed_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Completed At
+          description: ISO 8601 timestamp; populated when ``status == "completed"``.
+        result:
+          anyOf:
+          - $ref: '#/components/schemas/V1GapResultBody'
+          - type: 'null'
+          description: Populated when ``status == "completed"``.
+        error:
+          anyOf:
+          - type: object
+          - type: 'null'
+          title: Error
+          description: 'Populated when ``status == "failed"``. Shape: ``{"code": "...", "message": "..."}``.'
+      type: object
+      required:
+      - job_id
+      - status
+      title: V1GapStatusResponse
+      description: '``GET /api/v1/gap-analysis/{job_id}`` response.
+
+
+        Single model with optional fields rather than a discriminated union -
+
+        consumers can branch on ``status`` and pick out the field set
+
+        relevant to that state.'
+    V1GapBody:
+      properties:
+        my_domain:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: My Domain
+          description: Your domain (the one you want to find gaps for).
+        competitor_domains:
+          items:
+            type: string
+          type: array
+          maxItems: 5
+          minItems: 1
+          title: Competitor Domains
+          description: 1..5 competitor domains. Linking domains that link to any of these but not to ``my_domain`` are returned as gaps.
+      type: object
+      required:
+      - my_domain
+      - competitor_domains
+      title: V1GapBody
+      description: Request body for ``POST /api/v1/gap-analysis``.
+    V1GapResultBody:
+      properties:
+        my_domain:
+          type: string
+          title: My Domain
+        competitor_domains:
+          items:
+            type: string
+          type: array
+          title: Competitor Domains
+        gaps:
+          items:
+            $ref: '#/components/schemas/V1GapResultGap'
+          type: array
+          title: Gaps
+        total_gaps:
+          type: integer
+          title: Total Gaps
+          description: '``len(gaps)`` - convenience for clients.'
+        truncated:
+          type: boolean
+          title: Truncated
+          description: True when the result was clipped to the export cap (25,000 gaps); more linking domains exist than were returned.
+          default: false
+      type: object
+      required:
+      - my_domain
+      - competitor_domains
+      - gaps
+      - total_gaps
+      title: V1GapResultBody
+      description: The ``result`` object on a completed job.
+    V1GapResultGap:
+      properties:
+        linking_domain:
+          type: string
+          title: Linking Domain
+          description: Domain that links to one or more competitors but not to ``my_domain``.
+        found_on:
+          items:
+            type: string
+          type: array
+          title: Found On
+          description: Subset of the request's ``competitor_domains`` that this linking_domain points at.
+      type: object
+      required:
+      - linking_domain
+      - found_on
+      title: V1GapResultGap
+      description: One gap row in a completed job's result.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

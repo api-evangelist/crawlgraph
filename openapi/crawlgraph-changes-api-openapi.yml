@@ -1,0 +1,294 @@
+openapi: 3.2.0
+info:
+  title: CrawlGraph Changes API
+  description: Free backlink intelligence powered by Common Crawl's hyperlink graph.
+  version: 1.2.2
+tags:
+- name: Changes
+paths:
+  /api/v1/changes:
+    get:
+      tags:
+      - Changes
+      summary: Compare inbound-link observations across indexed releases
+      description: Return observed additions, absences, and authority movement.
+      operationId: v1_changes_api_v1_changes_get
+      parameters:
+      - name: domain
+        in: query
+        required: true
+        schema:
+          type: string
+          maxLength: 253
+          description: Target domain to compare.
+          title: Domain
+        description: Target domain to compare.
+      - name: from
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            maxLength: 64
+          - type: 'null'
+          description: Older release id. Defaults to the older release in the newest queryable pair, or to an explicit 'to' release's nearest queryable ancestor.
+          title: From
+        description: Older release id. Defaults to the older release in the newest queryable pair, or to an explicit 'to' release's nearest queryable ancestor.
+      - name: to
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            maxLength: 64
+          - type: 'null'
+          description: Newer release id. Defaults to the newer release in the newest queryable pair.
+          title: To
+        description: Newer release id. Defaults to the newer release in the newest queryable pair.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/V1ChangesAvailableResponse'
+                - $ref: '#/components/schemas/V1ChangesUnavailableResponse'
+                title: Response V1 Changes Api V1 Changes Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    V1ChangesCounts:
+      properties:
+        from_snapshot:
+          type: integer
+          title: From Snapshot
+        to_snapshot:
+          type: integer
+          title: To Snapshot
+        added:
+          type: integer
+          title: Added
+          description: Referring domains observed only in the newer snapshot.
+        removed:
+          type: integer
+          title: Removed
+          description: Referring domains absent from the newer snapshot.
+        authority_moved:
+          type: integer
+          title: Authority Moved
+      type: object
+      required:
+      - from_snapshot
+      - to_snapshot
+      - added
+      - removed
+      - authority_moved
+      title: V1ChangesCounts
+    V1ChangesUnavailableResponse:
+      properties:
+        domain:
+          type: string
+          title: Domain
+        to_release:
+          $ref: '#/components/schemas/V1ChangesRelease'
+        counts:
+          $ref: '#/components/schemas/V1ChangesCounts'
+        added:
+          items:
+            $ref: '#/components/schemas/V1ChangesObservedDomain'
+          type: array
+          title: Added
+          description: Referring domains observed only in the newer snapshot.
+        removed:
+          items:
+            $ref: '#/components/schemas/V1ChangesObservedDomain'
+          type: array
+          title: Removed
+          description: Referring domains observed in the older snapshot but absent from the newer snapshot.
+        authority_moved:
+          items:
+            $ref: '#/components/schemas/V1ChangesAuthorityMovement'
+          type: array
+          title: Authority Moved
+        truncated:
+          type: boolean
+          title: Truncated
+        cap:
+          type: integer
+          title: Cap
+        snapshot_caveat:
+          type: string
+          title: Snapshot Caveat
+        comparison_available:
+          type: boolean
+          enum:
+          - false
+          const: false
+          title: Comparison Available
+        from_release:
+          anyOf:
+          - $ref: '#/components/schemas/V1ChangesRelease'
+          - type: 'null'
+        message:
+          type: string
+          title: Message
+      type: object
+      required:
+      - domain
+      - to_release
+      - counts
+      - added
+      - removed
+      - authority_moved
+      - truncated
+      - cap
+      - snapshot_caveat
+      - comparison_available
+      - from_release
+      - message
+      title: V1ChangesUnavailableResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    V1ChangesAuthorityMovement:
+      properties:
+        linking_domain:
+          type: string
+          title: Linking Domain
+        from_authority:
+          type: integer
+          title: From Authority
+        to_authority:
+          type: integer
+          title: To Authority
+        delta:
+          type: integer
+          title: Delta
+      type: object
+      required:
+      - linking_domain
+      - from_authority
+      - to_authority
+      - delta
+      title: V1ChangesAuthorityMovement
+    V1ChangesRelease:
+      properties:
+        id:
+          type: string
+          title: Id
+        label:
+          type: string
+          title: Label
+      type: object
+      required:
+      - id
+      - label
+      title: V1ChangesRelease
+    V1ChangesObservedDomain:
+      properties:
+        linking_domain:
+          type: string
+          title: Linking Domain
+        num_hosts:
+          type: integer
+          title: Num Hosts
+        cg_authority:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cg Authority
+      type: object
+      required:
+      - linking_domain
+      - num_hosts
+      title: V1ChangesObservedDomain
+    V1ChangesAvailableResponse:
+      properties:
+        domain:
+          type: string
+          title: Domain
+        to_release:
+          $ref: '#/components/schemas/V1ChangesRelease'
+        counts:
+          $ref: '#/components/schemas/V1ChangesCounts'
+        added:
+          items:
+            $ref: '#/components/schemas/V1ChangesObservedDomain'
+          type: array
+          title: Added
+          description: Referring domains observed only in the newer snapshot.
+        removed:
+          items:
+            $ref: '#/components/schemas/V1ChangesObservedDomain'
+          type: array
+          title: Removed
+          description: Referring domains observed in the older snapshot but absent from the newer snapshot.
+        authority_moved:
+          items:
+            $ref: '#/components/schemas/V1ChangesAuthorityMovement'
+          type: array
+          title: Authority Moved
+        truncated:
+          type: boolean
+          title: Truncated
+        cap:
+          type: integer
+          title: Cap
+        snapshot_caveat:
+          type: string
+          title: Snapshot Caveat
+        comparison_available:
+          type: boolean
+          enum:
+          - true
+          const: true
+          title: Comparison Available
+        from_release:
+          $ref: '#/components/schemas/V1ChangesRelease'
+      type: object
+      required:
+      - domain
+      - to_release
+      - counts
+      - added
+      - removed
+      - authority_moved
+      - truncated
+      - cap
+      - snapshot_caveat
+      - comparison_available
+      - from_release
+      title: V1ChangesAvailableResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

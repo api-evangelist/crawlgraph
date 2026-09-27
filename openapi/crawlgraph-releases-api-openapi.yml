@@ -1,0 +1,60 @@
+openapi: 3.2.0
+info:
+  title: CrawlGraph Releases API
+  description: Free backlink intelligence powered by Common Crawl's hyperlink graph.
+  version: 1.2.2
+tags:
+- name: Releases
+paths:
+  /api/v1/releases:
+    get:
+      tags:
+      - Releases
+      summary: List available Common Crawl releases
+      description: 'Return the list of releases the API can serve queries from.
+
+
+        Does NOT charge against the caller''s quota.'
+      operationId: v1_list_releases_api_v1_releases_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1ReleasesResponse'
+components:
+  schemas:
+    V1ReleaseItem:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Release identifier, e.g. 'cc-main-2026-jan-feb-mar'.
+        label:
+          type: string
+          title: Label
+          description: Human label for the release, e.g. 'Jan-Mar 2026'.
+        available:
+          type: boolean
+          title: Available
+          description: Whether manifest intent and the corresponding DuckDB artifact both allow queries for this release.
+      type: object
+      required:
+      - id
+      - label
+      - available
+      title: V1ReleaseItem
+      description: One Common Crawl release the API can serve queries from.
+    V1ReleasesResponse:
+      properties:
+        releases:
+          items:
+            $ref: '#/components/schemas/V1ReleaseItem'
+          type: array
+          title: Releases
+      type: object
+      required:
+      - releases
+      title: V1ReleasesResponse
+      description: Top-level response body for ``GET /api/v1/releases``.

@@ -94,18 +94,128 @@ apis:
     url: https://crawlgraph.com/docs/api
   - type: SourceCode
     url: https://github.com/pucilpet/crawlgraph-mcp
-- aid: crawlgraph:crawlgraph-v1-api
-  name: CrawlGraph V1 API
-  description: >-
-    CrawlGraph public REST API v1 — backlink lookups, Common Crawl release discovery, async gap analysis,
-    and cross-release change comparison.
+- aid: crawlgraph:crawlgraph-backlinks-api
+  name: CrawlGraph Backlinks API
+  description: The Backlinks API from CrawlGraph — 1 operation(s) for backlinks.
   humanURL: https://crawlgraph.com/docs/api
-  baseURL: https://crawlgraph.com/api/v1/
+  baseURL: https://crawlgraph.com/mcp
   tags:
-  - v1
+  - Backlinks
   properties:
   - type: OpenAPI
-    url: openapi/crawlgraph-v1-api-openapi.yml
+    url: openapi/crawlgraph-backlinks-api-openapi.yml
+  - type: Documentation
+    url: https://crawlgraph.com/docs/api
+  - type: APIReference
+    url: https://crawlgraph.com/docs/api
+  - type: Authentication
+    url: authentication/crawlgraph-authentication.yml
+  - type: Conventions
+    url: conventions/crawlgraph-conventions.yml
+  - type: ErrorCatalog
+    url: errors/crawlgraph-problem-types.yml
+  - type: DataModel
+    url: data-model/crawlgraph-data-model.yml
+  - type: RateLimits
+    url: rate-limits/crawlgraph-rate-limits.yml
+  - type: Examples
+    url: examples/crawlgraph-v1-examples.yml
+  - type: LLMsTxt
+    url: https://crawlgraph.com/llms.txt
+- aid: crawlgraph:crawlgraph-changes-api
+  name: CrawlGraph Changes API
+  description: The Changes API from CrawlGraph — 1 operation(s) for changes.
+  humanURL: https://crawlgraph.com/docs/api
+  baseURL: https://crawlgraph.com/mcp
+  tags:
+  - Changes
+  properties:
+  - type: OpenAPI
+    url: openapi/crawlgraph-changes-api-openapi.yml
+  - type: Documentation
+    url: https://crawlgraph.com/docs/api
+  - type: APIReference
+    url: https://crawlgraph.com/docs/api
+  - type: Authentication
+    url: authentication/crawlgraph-authentication.yml
+  - type: Conventions
+    url: conventions/crawlgraph-conventions.yml
+  - type: ErrorCatalog
+    url: errors/crawlgraph-problem-types.yml
+  - type: DataModel
+    url: data-model/crawlgraph-data-model.yml
+  - type: RateLimits
+    url: rate-limits/crawlgraph-rate-limits.yml
+  - type: Examples
+    url: examples/crawlgraph-v1-examples.yml
+  - type: LLMsTxt
+    url: https://crawlgraph.com/llms.txt
+- aid: crawlgraph:crawlgraph-free-key-api
+  name: CrawlGraph Free Key API
+  description: The Free Key API from CrawlGraph — 1 operation(s) for free key.
+  humanURL: https://crawlgraph.com/docs/api
+  baseURL: https://crawlgraph.com/mcp
+  tags:
+  - Free Key
+  properties:
+  - type: OpenAPI
+    url: openapi/crawlgraph-free-key-api-openapi.yml
+  - type: Documentation
+    url: https://crawlgraph.com/docs/api
+  - type: APIReference
+    url: https://crawlgraph.com/docs/api
+  - type: Authentication
+    url: authentication/crawlgraph-authentication.yml
+  - type: Conventions
+    url: conventions/crawlgraph-conventions.yml
+  - type: ErrorCatalog
+    url: errors/crawlgraph-problem-types.yml
+  - type: DataModel
+    url: data-model/crawlgraph-data-model.yml
+  - type: RateLimits
+    url: rate-limits/crawlgraph-rate-limits.yml
+  - type: Examples
+    url: examples/crawlgraph-v1-examples.yml
+  - type: LLMsTxt
+    url: https://crawlgraph.com/llms.txt
+- aid: crawlgraph:crawlgraph-gap-analysis-api
+  name: CrawlGraph Gap Analysis API
+  description: The Gap Analysis API from CrawlGraph — 2 operation(s) for gap analysis.
+  humanURL: https://crawlgraph.com/docs/api
+  baseURL: https://crawlgraph.com/mcp
+  tags:
+  - Gap Analysis
+  properties:
+  - type: OpenAPI
+    url: openapi/crawlgraph-gap-analysis-api-openapi.yml
+  - type: Documentation
+    url: https://crawlgraph.com/docs/api
+  - type: APIReference
+    url: https://crawlgraph.com/docs/api
+  - type: Authentication
+    url: authentication/crawlgraph-authentication.yml
+  - type: Conventions
+    url: conventions/crawlgraph-conventions.yml
+  - type: ErrorCatalog
+    url: errors/crawlgraph-problem-types.yml
+  - type: DataModel
+    url: data-model/crawlgraph-data-model.yml
+  - type: RateLimits
+    url: rate-limits/crawlgraph-rate-limits.yml
+  - type: Examples
+    url: examples/crawlgraph-v1-examples.yml
+  - type: LLMsTxt
+    url: https://crawlgraph.com/llms.txt
+- aid: crawlgraph:crawlgraph-releases-api
+  name: CrawlGraph Releases API
+  description: The Releases API from CrawlGraph — 1 operation(s) for releases.
+  humanURL: https://crawlgraph.com/docs/api
+  baseURL: https://crawlgraph.com/mcp
+  tags:
+  - Releases
+  properties:
+  - type: OpenAPI
+    url: openapi/crawlgraph-releases-api-openapi.yml
   - type: Documentation
     url: https://crawlgraph.com/docs/api
   - type: APIReference
