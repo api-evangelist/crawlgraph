@@ -45,73 +45,15 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    V1BacklinksResponse:
+    HTTPValidationError:
       properties:
-        domain:
-          type: string
-          title: Domain
-        release_id:
-          type: string
-          title: Release Id
-        release_label:
-          type: string
-          title: Release Label
-        total_linking_domains:
-          type: integer
-          title: Total Linking Domains
-          description: Number of distinct linking domains retrieved before the `limit` slice was applied.
-        returned:
-          type: integer
-          title: Returned
-          description: Number of rows actually included in `results`.
-        cg_authority:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Cg Authority
-          description: 0..100 log-rank percentile for the queried `domain`. NULL when the domain is missing from the ranks file.
-        cg_rank:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Cg Rank
-          description: Raw PageRank position of the queried `domain` (1 = top). NULL when the domain is missing from the ranks file.
-        results:
+        detail:
           items:
-            $ref: '#/components/schemas/V1BacklinkItem'
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Results
+          title: Detail
       type: object
-      required:
-      - domain
-      - release_id
-      - release_label
-      - total_linking_domains
-      - returned
-      - results
-      title: V1BacklinksResponse
-      description: Top-level response body for ``POST /api/v1/backlinks``.
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      title: HTTPValidationError
     V1BacklinksBody:
       properties:
         domain:
@@ -187,12 +129,70 @@ components:
         (1 = top-ranked domain on the web). Both are NULL for domains
 
         that don''t appear in the ranks file.'
-    HTTPValidationError:
+    ValidationError:
       properties:
-        detail:
+        loc:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            anyOf:
+            - type: string
+            - type: integer
           type: array
-          title: Detail
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
       type: object
-      title: HTTPValidationError
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    V1BacklinksResponse:
+      properties:
+        domain:
+          type: string
+          title: Domain
+        release_id:
+          type: string
+          title: Release Id
+        release_label:
+          type: string
+          title: Release Label
+        total_linking_domains:
+          type: integer
+          title: Total Linking Domains
+          description: Number of distinct linking domains retrieved before the `limit` slice was applied.
+        returned:
+          type: integer
+          title: Returned
+          description: Number of rows actually included in `results`.
+        cg_authority:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cg Authority
+          description: 0..100 log-rank percentile for the queried `domain`. NULL when the domain is missing from the ranks file.
+        cg_rank:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cg Rank
+          description: Raw PageRank position of the queried `domain` (1 = top). NULL when the domain is missing from the ranks file.
+        results:
+          items:
+            $ref: '#/components/schemas/V1BacklinkItem'
+          type: array
+          title: Results
+      type: object
+      required:
+      - domain
+      - release_id
+      - release_label
+      - total_linking_domains
+      - returned
+      - results
+      title: V1BacklinksResponse
+      description: Top-level response body for ``POST /api/v1/backlinks``.

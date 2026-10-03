@@ -10,9 +10,7 @@
     "crawlgraph-gap-analysis-api-openapi.yml",
     "crawlgraph-releases-api-openapi.yml"
   ],
-  "archived": [
-    "deleted 1 superseded output(s) from the previous generation"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
@@ -30,11 +28,14 @@
     "crawlgraph-openapi.json: declared missing tag: Free Key",
     "crawlgraph-openapi.json: declared missing tag: Gap Analysis",
     "crawlgraph-openapi.json: declared missing tag: Releases",
-    "superseded outputs removed: crawlgraph-v1-api-openapi.yml",
-    "apis.yml register: written (+5 apis, 6 total)"
+    "apis.yml register: already-registered"
   ],
   "skipped": [
     "_original/crawlgraph-v1-openapi.yml: archived document superseded by a larger archived document",
-    "crawlgraph-v1-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+    "crawlgraph-backlinks-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "crawlgraph-changes-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "crawlgraph-free-key-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "crawlgraph-gap-analysis-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "crawlgraph-releases-api-openapi.yml: previously refined output, superseded by openapi/_original/"
   ]
 }

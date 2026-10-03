@@ -63,6 +63,36 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     V1ChangesCounts:
       properties:
         from_snapshot:
@@ -90,6 +120,58 @@ components:
       - removed
       - authority_moved
       title: V1ChangesCounts
+    V1ChangesAuthorityMovement:
+      properties:
+        linking_domain:
+          type: string
+          title: Linking Domain
+        from_authority:
+          type: integer
+          title: From Authority
+        to_authority:
+          type: integer
+          title: To Authority
+        delta:
+          type: integer
+          title: Delta
+      type: object
+      required:
+      - linking_domain
+      - from_authority
+      - to_authority
+      - delta
+      title: V1ChangesAuthorityMovement
+    V1ChangesObservedDomain:
+      properties:
+        linking_domain:
+          type: string
+          title: Linking Domain
+        num_hosts:
+          type: integer
+          title: Num Hosts
+        cg_authority:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cg Authority
+      type: object
+      required:
+      - linking_domain
+      - num_hosts
+      title: V1ChangesObservedDomain
+    V1ChangesRelease:
+      properties:
+        id:
+          type: string
+          title: Id
+        label:
+          type: string
+          title: Label
+      type: object
+      required:
+      - id
+      - label
+      title: V1ChangesRelease
     V1ChangesUnavailableResponse:
       properties:
         domain:
@@ -153,79 +235,6 @@ components:
       - from_release
       - message
       title: V1ChangesUnavailableResponse
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    V1ChangesAuthorityMovement:
-      properties:
-        linking_domain:
-          type: string
-          title: Linking Domain
-        from_authority:
-          type: integer
-          title: From Authority
-        to_authority:
-          type: integer
-          title: To Authority
-        delta:
-          type: integer
-          title: Delta
-      type: object
-      required:
-      - linking_domain
-      - from_authority
-      - to_authority
-      - delta
-      title: V1ChangesAuthorityMovement
-    V1ChangesRelease:
-      properties:
-        id:
-          type: string
-          title: Id
-        label:
-          type: string
-          title: Label
-      type: object
-      required:
-      - id
-      - label
-      title: V1ChangesRelease
-    V1ChangesObservedDomain:
-      properties:
-        linking_domain:
-          type: string
-          title: Linking Domain
-        num_hosts:
-          type: integer
-          title: Num Hosts
-        cg_authority:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Cg Authority
-      type: object
-      required:
-      - linking_domain
-      - num_hosts
-      title: V1ChangesObservedDomain
     V1ChangesAvailableResponse:
       properties:
         domain:
@@ -283,12 +292,3 @@ components:
       - comparison_available
       - from_release
       title: V1ChangesAvailableResponse
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
