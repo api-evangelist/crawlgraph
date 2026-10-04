@@ -45,111 +45,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    V1BacklinksBody:
-      properties:
-        domain:
-          type: string
-          maxLength: 255
-          minLength: 1
-          title: Domain
-          description: Target domain to look up backlinks for, e.g. 'example.com'.
-        release_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Release Id
-          description: Common Crawl release id. Defaults to the latest release.
-        limit:
-          type: integer
-          maximum: 10000.0
-          minimum: 1.0
-          title: Limit
-          description: Max number of result rows to return (1..10000).
-          default: 1000
-        sort:
-          type: string
-          enum:
-          - authority
-          - hosts
-          title: Sort
-          description: Result ordering. 'authority' (default) sorts by cg_authority DESC then num_hosts DESC. 'hosts' preserves the legacy num_hosts DESC ordering.
-          default: authority
-      type: object
-      required:
-      - domain
-      title: V1BacklinksBody
-      description: Request body for ``POST /api/v1/backlinks``.
-    V1BacklinkItem:
-      properties:
-        linking_domain:
-          type: string
-          title: Linking Domain
-        num_hosts:
-          type: integer
-          title: Num Hosts
-        tld:
-          type: string
-          title: Tld
-        cg_authority:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Cg Authority
-        cg_rank:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Cg Rank
-      type: object
-      required:
-      - linking_domain
-      - num_hosts
-      - tld
-      title: V1BacklinkItem
-      description: 'One referring-domain row in the response.
-
-
-        ``tld`` is the last label of ``linking_domain`` (no leading dot).
-
-        ``cg_authority`` is a 0..100 log-rank percentile from the Common
-
-        Crawl harmonic-centrality ranking (higher = more authoritative).
-
-        ``cg_rank`` is the raw PageRank position across the whole graph
-
-        (1 = top-ranked domain on the web). Both are NULL for domains
-
-        that don''t appear in the ranks file.'
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
     V1BacklinksResponse:
       properties:
         domain:
@@ -196,3 +91,108 @@ components:
       - results
       title: V1BacklinksResponse
       description: Top-level response body for ``POST /api/v1/backlinks``.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    V1BacklinkItem:
+      properties:
+        linking_domain:
+          type: string
+          title: Linking Domain
+        num_hosts:
+          type: integer
+          title: Num Hosts
+        tld:
+          type: string
+          title: Tld
+        cg_authority:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cg Authority
+        cg_rank:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cg Rank
+      type: object
+      required:
+      - linking_domain
+      - num_hosts
+      - tld
+      title: V1BacklinkItem
+      description: 'One referring-domain row in the response.
+
+
+        ``tld`` is the last label of ``linking_domain`` (no leading dot).
+
+        ``cg_authority`` is a 0..100 log-rank percentile from the Common
+
+        Crawl harmonic-centrality ranking (higher = more authoritative).
+
+        ``cg_rank`` is the raw PageRank position across the whole graph
+
+        (1 = top-ranked domain on the web). Both are NULL for domains
+
+        that don''t appear in the ranks file.'
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    V1BacklinksBody:
+      properties:
+        domain:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Domain
+          description: Target domain to look up backlinks for, e.g. 'example.com'.
+        release_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Release Id
+          description: Common Crawl release id. Defaults to the latest release.
+        limit:
+          type: integer
+          maximum: 10000.0
+          minimum: 1.0
+          title: Limit
+          description: Max number of result rows to return (1..10000).
+          default: 1000
+        sort:
+          type: string
+          enum:
+          - authority
+          - hosts
+          title: Sort
+          description: Result ordering. 'authority' (default) sorts by cg_authority DESC then num_hosts DESC. 'hosts' preserves the legacy num_hosts DESC ordering.
+          default: authority
+      type: object
+      required:
+      - domain
+      title: V1BacklinksBody
+      description: Request body for ``POST /api/v1/backlinks``.

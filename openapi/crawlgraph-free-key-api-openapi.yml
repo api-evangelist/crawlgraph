@@ -41,20 +41,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    FreeKeyRequest:
-      properties:
-        email:
-          type: string
-          format: email
-          title: Email
-        attribution:
-          anyOf:
-          - $ref: '#/components/schemas/AttributionPayload'
-          - type: 'null'
-      type: object
-      required:
-      - email
-      title: FreeKeyRequest
     AttributionPayload:
       properties:
         utm_source:
@@ -101,15 +87,6 @@ components:
           title: Referrer Host
       type: object
       title: AttributionPayload
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -131,3 +108,26 @@ components:
       - msg
       - type
       title: ValidationError
+    FreeKeyRequest:
+      properties:
+        email:
+          type: string
+          format: email
+          title: Email
+        attribution:
+          anyOf:
+          - $ref: '#/components/schemas/AttributionPayload'
+          - type: 'null'
+      type: object
+      required:
+      - email
+      title: FreeKeyRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

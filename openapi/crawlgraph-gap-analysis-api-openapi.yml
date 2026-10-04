@@ -81,128 +81,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    V1GapResultGap:
-      properties:
-        linking_domain:
-          type: string
-          title: Linking Domain
-          description: Domain that links to one or more competitors but not to ``my_domain``.
-        found_on:
-          items:
-            type: string
-          type: array
-          title: Found On
-          description: Subset of the request's ``competitor_domains`` that this linking_domain points at.
-      type: object
-      required:
-      - linking_domain
-      - found_on
-      title: V1GapResultGap
-      description: One gap row in a completed job's result.
-    V1GapResultBody:
-      properties:
-        my_domain:
-          type: string
-          title: My Domain
-        competitor_domains:
-          items:
-            type: string
-          type: array
-          title: Competitor Domains
-        gaps:
-          items:
-            $ref: '#/components/schemas/V1GapResultGap'
-          type: array
-          title: Gaps
-        total_gaps:
-          type: integer
-          title: Total Gaps
-          description: '``len(gaps)`` - convenience for clients.'
-        truncated:
-          type: boolean
-          title: Truncated
-          description: True when the result was clipped to the export cap (25,000 gaps); more linking domains exist than were returned.
-          default: false
-      type: object
-      required:
-      - my_domain
-      - competitor_domains
-      - gaps
-      - total_gaps
-      title: V1GapResultBody
-      description: The ``result`` object on a completed job.
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    V1GapSubmitResponse:
-      properties:
-        job_id:
-          type: string
-          title: Job Id
-        status:
-          type: string
-          title: Status
-          description: Always ``"queued"`` on submit.
-        poll_url:
-          type: string
-          title: Poll Url
-          description: GET this URL to poll job status.
-      type: object
-      required:
-      - job_id
-      - status
-      - poll_url
-      title: V1GapSubmitResponse
-      description: '``202`` response body when a job is queued.'
-    V1GapBody:
-      properties:
-        my_domain:
-          type: string
-          maxLength: 255
-          minLength: 1
-          title: My Domain
-          description: Your domain (the one you want to find gaps for).
-        competitor_domains:
-          items:
-            type: string
-          type: array
-          maxItems: 5
-          minItems: 1
-          title: Competitor Domains
-          description: 1..5 competitor domains. Linking domains that link to any of these but not to ``my_domain`` are returned as gaps.
-      type: object
-      required:
-      - my_domain
-      - competitor_domains
-      title: V1GapBody
-      description: Request body for ``POST /api/v1/gap-analysis``.
     V1GapStatusResponse:
       properties:
         job_id:
@@ -254,3 +132,125 @@ components:
         consumers can branch on ``status`` and pick out the field set
 
         relevant to that state.'
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    V1GapBody:
+      properties:
+        my_domain:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: My Domain
+          description: Your domain (the one you want to find gaps for).
+        competitor_domains:
+          items:
+            type: string
+          type: array
+          maxItems: 5
+          minItems: 1
+          title: Competitor Domains
+          description: 1..5 competitor domains. Linking domains that link to any of these but not to ``my_domain`` are returned as gaps.
+      type: object
+      required:
+      - my_domain
+      - competitor_domains
+      title: V1GapBody
+      description: Request body for ``POST /api/v1/gap-analysis``.
+    V1GapResultBody:
+      properties:
+        my_domain:
+          type: string
+          title: My Domain
+        competitor_domains:
+          items:
+            type: string
+          type: array
+          title: Competitor Domains
+        gaps:
+          items:
+            $ref: '#/components/schemas/V1GapResultGap'
+          type: array
+          title: Gaps
+        total_gaps:
+          type: integer
+          title: Total Gaps
+          description: '``len(gaps)`` - convenience for clients.'
+        truncated:
+          type: boolean
+          title: Truncated
+          description: True when the result was clipped to the export cap (25,000 gaps); more linking domains exist than were returned.
+          default: false
+      type: object
+      required:
+      - my_domain
+      - competitor_domains
+      - gaps
+      - total_gaps
+      title: V1GapResultBody
+      description: The ``result`` object on a completed job.
+    V1GapResultGap:
+      properties:
+        linking_domain:
+          type: string
+          title: Linking Domain
+          description: Domain that links to one or more competitors but not to ``my_domain``.
+        found_on:
+          items:
+            type: string
+          type: array
+          title: Found On
+          description: Subset of the request's ``competitor_domains`` that this linking_domain points at.
+      type: object
+      required:
+      - linking_domain
+      - found_on
+      title: V1GapResultGap
+      description: One gap row in a completed job's result.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    V1GapSubmitResponse:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+        status:
+          type: string
+          title: Status
+          description: Always ``"queued"`` on submit.
+        poll_url:
+          type: string
+          title: Poll Url
+          description: GET this URL to poll job status.
+      type: object
+      required:
+      - job_id
+      - status
+      - poll_url
+      title: V1GapSubmitResponse
+      description: '``202`` response body when a job is queued.'

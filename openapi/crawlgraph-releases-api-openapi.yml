@@ -25,6 +25,18 @@ paths:
                 $ref: '#/components/schemas/V1ReleasesResponse'
 components:
   schemas:
+    V1ReleasesResponse:
+      properties:
+        releases:
+          items:
+            $ref: '#/components/schemas/V1ReleaseItem'
+          type: array
+          title: Releases
+      type: object
+      required:
+      - releases
+      title: V1ReleasesResponse
+      description: Top-level response body for ``GET /api/v1/releases``.
     V1ReleaseItem:
       properties:
         id:
@@ -46,15 +58,3 @@ components:
       - available
       title: V1ReleaseItem
       description: One Common Crawl release the API can serve queries from.
-    V1ReleasesResponse:
-      properties:
-        releases:
-          items:
-            $ref: '#/components/schemas/V1ReleaseItem'
-          type: array
-          title: Releases
-      type: object
-      required:
-      - releases
-      title: V1ReleasesResponse
-      description: Top-level response body for ``GET /api/v1/releases``.
