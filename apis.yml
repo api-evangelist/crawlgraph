@@ -245,6 +245,9 @@ generated:
   confidence: 85
   at: '2026-07-03T11:50:54.356Z'
 common:
+- type: CapabilityMap
+  url: capabilities/crawlgraph-capability-edges.yml
+  name: CrawlGraph Business Capability Map
 - type: Website
   url: https://www.crawlgraph.com/
 - type: AgenticAccess
