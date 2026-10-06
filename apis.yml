@@ -38,7 +38,7 @@ description: >-
   as a one-time $99 lifetime licence rather than a subscription.
 url: https://raw.githubusercontent.com/api-evangelist/crawlgraph/refs/heads/main/apis.yml
 created: '2026-07-03'
-modified: '2026-09-02'
+modified: '2026-10-06'
 specificationVersion: '0.23'
 tags:
   - SEO
@@ -245,6 +245,8 @@ generated:
   confidence: 85
   at: '2026-07-03T11:50:54.356Z'
 common:
+- url: https://crawlgraph.com/feed.xml
+  type: BlogRSS
 - type: CapabilityMap
   url: capabilities/crawlgraph-capability-edges.yml
   name: CrawlGraph Business Capability Map
