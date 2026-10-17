@@ -63,33 +63,97 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    V1ChangesCounts:
+    V1ChangesAvailableResponse:
       properties:
-        from_snapshot:
-          type: integer
-          title: From Snapshot
-        to_snapshot:
-          type: integer
-          title: To Snapshot
+        domain:
+          type: string
+          title: Domain
+        to_release:
+          $ref: '#/components/schemas/V1ChangesRelease'
+        counts:
+          $ref: '#/components/schemas/V1ChangesCounts'
         added:
-          type: integer
+          items:
+            $ref: '#/components/schemas/V1ChangesObservedDomain'
+          type: array
           title: Added
           description: Referring domains observed only in the newer snapshot.
         removed:
-          type: integer
+          items:
+            $ref: '#/components/schemas/V1ChangesObservedDomain'
+          type: array
           title: Removed
-          description: Referring domains absent from the newer snapshot.
+          description: Referring domains observed in the older snapshot but absent from the newer snapshot.
         authority_moved:
-          type: integer
+          items:
+            $ref: '#/components/schemas/V1ChangesAuthorityMovement'
+          type: array
           title: Authority Moved
+        truncated:
+          type: boolean
+          title: Truncated
+        cap:
+          type: integer
+          title: Cap
+        snapshot_caveat:
+          type: string
+          title: Snapshot Caveat
+        comparison_available:
+          type: boolean
+          enum:
+          - true
+          const: true
+          title: Comparison Available
+        from_release:
+          $ref: '#/components/schemas/V1ChangesRelease'
       type: object
       required:
-      - from_snapshot
-      - to_snapshot
+      - domain
+      - to_release
+      - counts
       - added
       - removed
       - authority_moved
-      title: V1ChangesCounts
+      - truncated
+      - cap
+      - snapshot_caveat
+      - comparison_available
+      - from_release
+      title: V1ChangesAvailableResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    V1ChangesRelease:
+      properties:
+        id:
+          type: string
+          title: Id
+        label:
+          type: string
+          title: Label
+      type: object
+      required:
+      - id
+      - label
+      title: V1ChangesRelease
     V1ChangesUnavailableResponse:
       properties:
         domain:
@@ -153,97 +217,6 @@ components:
       - from_release
       - message
       title: V1ChangesUnavailableResponse
-    V1ChangesRelease:
-      properties:
-        id:
-          type: string
-          title: Id
-        label:
-          type: string
-          title: Label
-      type: object
-      required:
-      - id
-      - label
-      title: V1ChangesRelease
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    V1ChangesAvailableResponse:
-      properties:
-        domain:
-          type: string
-          title: Domain
-        to_release:
-          $ref: '#/components/schemas/V1ChangesRelease'
-        counts:
-          $ref: '#/components/schemas/V1ChangesCounts'
-        added:
-          items:
-            $ref: '#/components/schemas/V1ChangesObservedDomain'
-          type: array
-          title: Added
-          description: Referring domains observed only in the newer snapshot.
-        removed:
-          items:
-            $ref: '#/components/schemas/V1ChangesObservedDomain'
-          type: array
-          title: Removed
-          description: Referring domains observed in the older snapshot but absent from the newer snapshot.
-        authority_moved:
-          items:
-            $ref: '#/components/schemas/V1ChangesAuthorityMovement'
-          type: array
-          title: Authority Moved
-        truncated:
-          type: boolean
-          title: Truncated
-        cap:
-          type: integer
-          title: Cap
-        snapshot_caveat:
-          type: string
-          title: Snapshot Caveat
-        comparison_available:
-          type: boolean
-          enum:
-          - true
-          const: true
-          title: Comparison Available
-        from_release:
-          $ref: '#/components/schemas/V1ChangesRelease'
-      type: object
-      required:
-      - domain
-      - to_release
-      - counts
-      - added
-      - removed
-      - authority_moved
-      - truncated
-      - cap
-      - snapshot_caveat
-      - comparison_available
-      - from_release
-      title: V1ChangesAvailableResponse
     V1ChangesObservedDomain:
       properties:
         linking_domain:
@@ -262,15 +235,33 @@ components:
       - linking_domain
       - num_hosts
       title: V1ChangesObservedDomain
-    HTTPValidationError:
+    V1ChangesCounts:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        from_snapshot:
+          type: integer
+          title: From Snapshot
+        to_snapshot:
+          type: integer
+          title: To Snapshot
+        added:
+          type: integer
+          title: Added
+          description: Referring domains observed only in the newer snapshot.
+        removed:
+          type: integer
+          title: Removed
+          description: Referring domains absent from the newer snapshot.
+        authority_moved:
+          type: integer
+          title: Authority Moved
       type: object
-      title: HTTPValidationError
+      required:
+      - from_snapshot
+      - to_snapshot
+      - added
+      - removed
+      - authority_moved
+      title: V1ChangesCounts
     V1ChangesAuthorityMovement:
       properties:
         linking_domain:
@@ -292,3 +283,12 @@ components:
       - to_authority
       - delta
       title: V1ChangesAuthorityMovement
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
