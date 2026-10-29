@@ -1,4 +1,4 @@
-# crawlgraph
+# CrawlGraph
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,4 +64,136 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-A backlink-intelligence SaaS built on Common Crawl's open hyperlink graph (~120M domains / 4.4B links). Provides referring-domain lookups, competitor gap analysis, and outreach-target discovery as a low-cost alternative to Ahrefs/Moz/Semrush.
+CrawlGraph is a backlink-intelligence SaaS built on Common Crawl's open hyperlink graph (121.1M domains / 3.90B domain-level links), positioned as a low-cost alternative to Ahrefs, Moz, Semrush and Majestic. It offers referring-domain lookups with authority scoring, competitor gap analysis, warm outreach-target discovery, and cross-release change comparison. The product ships an unusually complete developer surface for a solo-operator SaaS: a public OpenAPI 3.1 contract, a self-serve free API tier (15 backlink calls a month, no card), a hosted remote MCP server whose tools publish both input and output schemas, an open-source local MCP package on npm, a published llms.txt, and open CC-BY study datasets. It is operated by Search Engine Wizards in Finland and priced as a one-time $99 lifetime licence rather than a subscription.
+
+**Areas:** SEO · backlink-intelligence · MarTech · Competitive Intelligence · Web Data · Common-Crawl · Link Building · Developer Tools · MCP
+
+## CrawlGraph on APIs.io
+
+Everything profiled for CrawlGraph is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/crawlgraph/](https://apis.io/providers/crawlgraph/)** — or go straight to one of the APIs or properties below.
+
+### APIs (6)
+
+- [CrawlGraph MCP Server](https://apis.io/apis/crawlgraph/crawlgraph-mcp-server/) — Hosted remote Model Context Protocol server at https://crawlgraph.com/mcp over Streamable HTTP, plus an open-source local stdio fallback published to npm as…
+- [CrawlGraph Backlinks API](https://apis.io/apis/crawlgraph/crawlgraph-backlinks-api/) — The Backlinks API from CrawlGraph — 1 operation(s) for backlinks.
+- [CrawlGraph Changes API](https://apis.io/apis/crawlgraph/crawlgraph-changes-api/) — The Changes API from CrawlGraph — 1 operation(s) for changes.
+- [CrawlGraph Free Key API](https://apis.io/apis/crawlgraph/crawlgraph-free-key-api/) — The Free Key API from CrawlGraph — 1 operation(s) for free key.
+- [CrawlGraph Gap Analysis API](https://apis.io/apis/crawlgraph/crawlgraph-gap-analysis-api/) — The Gap Analysis API from CrawlGraph — 2 operation(s) for gap analysis.
+- [CrawlGraph Releases API](https://apis.io/apis/crawlgraph/crawlgraph-releases-api/) — The Releases API from CrawlGraph — 1 operation(s) for releases.
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [crawlgraph-mcp.yml](https://apis.io/servers/crawlgraph/crawlgraph-mcp-yml/)
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Crawlgraph Agentic Access](https://apis.io/agentic-access/crawlgraph/crawlgraph-agentic-access/)
+
+#### Collections (1)
+
+Postman and Open Collection request collections.
+
+- [CrawlGraph](https://apis.io/collections/crawlgraph/open-crawlgraph-v1/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Crawlgraph V1 Overlay](https://apis.io/overlays/crawlgraph/crawlgraph-v1-overlay/)
+
+#### Security (3)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Crawlgraph Authentication](https://apis.io/security/crawlgraph/crawlgraph-authentication/)
+- [Crawlgraph Domain Security](https://apis.io/security/crawlgraph/crawlgraph-domain-security/)
+- [Crawlgraph Vulnerability Disclosure](https://apis.io/security/crawlgraph/crawlgraph-vulnerability-disclosure/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Crawlgraph Plans Pricing](https://apis.io/plans/crawlgraph/crawlgraph-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Crawlgraph Rate Limits](https://apis.io/rate-limits/crawlgraph/crawlgraph-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.crawlgraph.com/)
+- [Documentation](https://crawlgraph.com/docs/api)
+- [Getting started](https://crawlgraph.com/docs/api)
+- [API reference](https://crawlgraph.com/docs/api)
+- [Pricing](https://crawlgraph.com/#pricing)
+- [Blog](https://crawlgraph.com/blog)
+- [Terms of service](https://crawlgraph.com/terms)
+- [Privacy policy](https://crawlgraph.com/privacy)
+- [GitHub](https://github.com/pucilpet)
+
+## API Evangelist rating
+
+**Kin Score 52.8** — developing · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 75.0 |
+| Contract quality | 43.7 |
+| Contract governance | 18.2 |
+| Operational transparency | 52.6 |
+| Developer ergonomics | 54.2 |
+| Access clarity | 64.5 |
+
+**Agent readiness 37.7** — agent-ready
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | verified |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | verified |
+| OpenAPI Examples | documented (partial credit) |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 30.4** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/crawlgraph/](https://apis.io/providers/crawlgraph/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for CrawlGraph: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/crawlgraph/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
